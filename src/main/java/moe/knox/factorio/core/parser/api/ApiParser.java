@@ -1,6 +1,5 @@
 package moe.knox.factorio.core.parser.api;
 
-import com.google.gson.GsonBuilder;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -8,7 +7,7 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.NlsContexts;
 import com.intellij.openapi.util.io.FileUtil;
-import moe.knox.factorio.core.parser.api.writer.Writer;
+import moe.knox.factorio.core.parser.api.writer.ApiFileWriter;
 import moe.knox.factorio.core.version.FactorioApiVersion;
 import moe.knox.factorio.core.NotificationService;
 import moe.knox.factorio.core.parser.Parser;
@@ -21,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,14 +27,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ApiParser extends Parser {
     private final static String apiRootPath = PathManager.getPluginsPath() + "/factorio_autocompletion/factorio_api/";
-    public static String factorioApiBaseLink = "https://lua-api.factorio.com/";
     private static AtomicBoolean downloadInProgress = new AtomicBoolean(false);
     private FactorioState config;
     private ProgressIndicator indicator;
     private String saveDir;
     private double curTodo = 0;
     private double maxTodo = 0;
-    private Writer writer = new Writer();
+    private ApiFileWriter writer = new ApiFileWriter();
 
     public ApiParser(@Nullable Project project, String saveDir, @NlsContexts.ProgressTitle @NotNull String title, boolean canBeCancelled) {
         super(project, title, canBeCancelled);
@@ -162,24 +159,11 @@ public class ApiParser extends Parser {
      * Here also the indicator will be updated, to show the current percentage of the parsing.
      */
     private void downloadAndParseAPI() {
-        String versionedApiLink = factorioApiBaseLink + config.selectedFactorioVersion.version() + "/runtime-api.json";
+        ApiSpecificationParser apiSpecificationParser = new ApiSpecificationParser();
 
         RuntimeApi runtimeApi;
-        try {
-            InputStreamReader inputStreamReader = new InputStreamReader(new URL(versionedApiLink).openStream());
-            GsonBuilder builder = new GsonBuilder();
-            ParsingHelper.addDeserializers(builder);
-            runtimeApi = builder
-                    .create()
-//                    .registerTypeAdapter(Concept.class, new JsonPolymorphismDeserializer<Concept>())
-//                    .registerTypeAdapter(Type.ComplexData.class, new JsonPolymorphismDeserializer<Type.ComplexData>())
-//                    .registerTypeAdapter(Operator.class, new JsonPolymorphismDeserializer<Operator>())
-                    .fromJson(inputStreamReader, RuntimeApi.class);
-            runtimeApi.arrangeElements();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
+
+        runtimeApi = apiSpecificationParser.parse(config.selectedFactorioVersion);
 
         String saveFile = saveDir + "factorio.lua";
         // create file

@@ -8,7 +8,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Writer
+public final class ApiFileWriter
 {
     private final static String NEW_LINE = System.lineSeparator();
 
@@ -273,7 +273,7 @@ public final class Writer
 
             if (method.takesTable) {
                 // This is a table function (use anonymous function as only param)
-                String paramType = TypeResolver.getAnonymousTableType(method.parameters);
+                String paramType = AnnotationTypeResolver.getAnonymousTableType(method.parameters);
 
                 writeParam(output, "param", paramType);
 
@@ -505,6 +505,6 @@ public final class Writer
 
     private String getType(Type type)
     {
-        return TypeResolver.getType(type);
+        return AnnotationTypeResolver.getType(type);
     }
 }
