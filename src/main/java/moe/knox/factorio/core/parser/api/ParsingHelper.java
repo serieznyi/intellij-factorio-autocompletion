@@ -3,7 +3,6 @@ package moe.knox.factorio.core.parser.api;
 import com.google.gson.*;
 import marcono1234.gson.recordadapter.RecordTypeAdapterFactory;
 import moe.knox.factorio.core.parser.api.data.*;
-import moe.knox.factorio.core.parser.api.data.JsonPolymorphism.JsonPolymorphismDeserializer;
 
 public class ParsingHelper {
     public static GsonBuilder addDeserializers(GsonBuilder builder) {
@@ -12,14 +11,6 @@ public class ParsingHelper {
 
     public static GsonBuilder addDeserializers(GsonBuilder builder, Class excludeType) {
         builder.registerTypeAdapterFactory(RecordTypeAdapterFactory.builder().allowMissingComponentValues().create());
-
-        if (excludeType == null || excludeType != Concept.class) {
-            builder.registerTypeAdapter(Concept.class, new JsonPolymorphismDeserializer<Concept>());
-        }
-
-        if (excludeType == null || excludeType != Operator.class) {
-            builder.registerTypeAdapter(Operator.class, new JsonPolymorphismDeserializer<Operator>());
-        }
 
         if (excludeType == null || excludeType != Parameter.class) {
             builder.registerTypeAdapter(Parameter.class, new Parameter.ParameterDeserializer());
