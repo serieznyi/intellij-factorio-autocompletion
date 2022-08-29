@@ -3,16 +3,40 @@ package moe.knox.factorio.core.parser.api.writer;
 import moe.knox.factorio.core.parser.api.data.*;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class ApiFileWriter
 {
     private final static String NEW_LINE = System.lineSeparator();
+    private final Writer output;
 
-    public void writeConcepts(OutputStreamWriter output, List<Concept> concepts) throws IOException {
+    public ApiFileWriter(Writer output)
+    {
+        this.output = output;
+    }
+
+    public static ApiFileWriter fromIoWriter(Writer outputStreamWriter) {
+        return new ApiFileWriter(outputStreamWriter);
+    }
+
+    public void writeRuntimeApi(RuntimeApi runtimeApi) throws IOException {
+        writeGlobalsObjects(runtimeApi.globalObjects);
+
+        output.append("---@class defines").append(NEW_LINE);
+        output.append("defines = {}").append(NEW_LINE).append(NEW_LINE);
+        writeDefines(runtimeApi.defines, "defines");
+
+        // TODO: implement autocompletion for events
+
+        writeClasses(runtimeApi.classes);
+
+        writeConcepts(runtimeApi.concepts);
+    }
+
+    private void writeConcepts(List<Concept> concepts) throws IOException {
         for (Concept concept : concepts) {
             switch (concept.category) {
                 case "table": {
@@ -131,7 +155,7 @@ public final class ApiFileWriter
         }
     }
 
-    public void writeGlobalsObjects(OutputStreamWriter output, List<GlobalObject> globalObjects) throws IOException {
+    private void writeGlobalsObjects(List<GlobalObject> globalObjects) throws IOException {
         // global objects
         for (GlobalObject globalObject : globalObjects) {
             writeDescLine(output, globalObject.description);
@@ -142,7 +166,7 @@ public final class ApiFileWriter
         output.append(NEW_LINE);
     }
 
-    public void writeDefines(OutputStreamWriter output, List<Define> defines, String parents) throws IOException {
+    private void writeDefines(List<Define> defines, String parents) throws IOException {
         for (Define define : defines) {
             writeDescLine(output, define.description);
 
@@ -153,7 +177,7 @@ public final class ApiFileWriter
             output.append(NEW_LINE);
 
             if (define.subkeys != null && !define.subkeys.isEmpty()) {
-                writeDefines(output, define.subkeys, subDefine.toString());
+                writeDefines(define.subkeys, subDefine.toString());
             }
             if (define.values != null && !define.values.isEmpty()) {
                 writeDefineValues(output, define.values, subDefine.toString());
@@ -162,7 +186,7 @@ public final class ApiFileWriter
         output.append(NEW_LINE);
     }
 
-    public void writeClasses(OutputStreamWriter output, List<FactorioClass> classes) throws IOException {
+    private void writeClasses(List<FactorioClass> classes) throws IOException {
         for (FactorioClass factorioClass : classes) {
             writeDescLine(output, factorioClass.description);
             writeDescLine(output, factorioClass.notes);
@@ -186,11 +210,11 @@ public final class ApiFileWriter
         }
     }
 
-    private void writeObjDef(OutputStreamWriter output, String className) throws IOException {
+    private void writeObjDef(Writer output, String className) throws IOException {
         writeObjDef(output, className, false);
     }
 
-    private void writeObjDef(OutputStreamWriter output, String className, boolean local) throws IOException {
+    private void writeObjDef(Writer output, String className, boolean local) throws IOException {
         if (local) {
             output.append("local ");
         }
@@ -198,19 +222,19 @@ public final class ApiFileWriter
         output.append(className).append(" = {}").append(NEW_LINE);
     }
 
-    private void writeValDef(OutputStreamWriter output, String name) throws IOException {
+    private void writeValDef(Writer output, String name) throws IOException {
         writeValDef(output, name, null, false);
     }
 
-    private void writeValDef(OutputStreamWriter output, String name, String parent) throws IOException {
+    private void writeValDef(Writer output, String name, String parent) throws IOException {
         writeValDef(output, name, parent, false);
     }
 
-    private void writeValDef(OutputStreamWriter output, String name, boolean local) throws IOException {
+    private void writeValDef(Writer output, String name, boolean local) throws IOException {
         writeValDef(output, name, null, local);
     }
 
-    private void writeValDef(OutputStreamWriter output, String name, String parent, boolean local) throws IOException {
+    private void writeValDef(Writer output, String name, String parent, boolean local) throws IOException {
         if (local) {
             output.append("local ");
         }
@@ -228,7 +252,7 @@ public final class ApiFileWriter
         output.append(" = nil").append(NEW_LINE);
     }
 
-    private void writeFunctionDef(OutputStreamWriter output, String className, String functionName, String... params) throws IOException {
+    private void writeFunctionDef(Writer output, String className, String functionName, String... params) throws IOException {
         output.append("function ").append(className).append('.').append(functionName).append('(');
         boolean first = true;
         for (String param : params) {
@@ -242,7 +266,7 @@ public final class ApiFileWriter
         output.append(") end").append(NEW_LINE);
     }
 
-    private void writeDefineValues(OutputStreamWriter output, List<BasicMember> defines, String parents) throws IOException {
+    private void writeDefineValues(Writer output, List<BasicMember> defines, String parents) throws IOException {
         for (BasicMember define : defines) {
             writeDescLine(output, define.description);
             writeType(output, "nil");
@@ -251,7 +275,7 @@ public final class ApiFileWriter
         }
     }
 
-    private void writeAttributes(OutputStreamWriter output, List<Attribute> attributes, String className) throws IOException {
+    private void writeAttributes(Writer output, List<Attribute> attributes, String className) throws IOException {
         for (Attribute attribute : attributes) {
             writeDescLine(output, attribute.description);
             writeDescLine(output, attribute.notes);
@@ -264,7 +288,7 @@ public final class ApiFileWriter
         }
     }
 
-    private void writeMethods(OutputStreamWriter output, List<Method> methods, String className) throws IOException {
+    private void writeMethods(Writer output, List<Method> methods, String className) throws IOException {
         for (Method method : methods) {
             writeDescLine(output, method.description);
             writeDescLine(output, method.notes);
@@ -305,7 +329,7 @@ public final class ApiFileWriter
         }
     }
 
-    private void writeDescLine(OutputStreamWriter output, List<String> lines) throws IOException {
+    private void writeDescLine(Writer output, List<String> lines) throws IOException {
         if (lines != null && !lines.isEmpty()) {
             for (String line : lines) {
                 writeEmptyLine(output);
@@ -314,18 +338,18 @@ public final class ApiFileWriter
         }
     }
 
-    private void writeEmptyLine(OutputStreamWriter output) throws IOException {
+    private void writeEmptyLine(Writer output) throws IOException {
         output.append("---").append(NEW_LINE);
     }
 
-    private void writeDescLine(OutputStreamWriter output, String line) throws IOException {
+    private void writeDescLine(Writer output, String line) throws IOException {
         if (!line.isEmpty()) {
             line = line.replace('\n', ' ');
             output.append("--- ").append(line).append(NEW_LINE);
         }
     }
 
-    private void writeReadWrite(OutputStreamWriter output, boolean read, boolean write) throws IOException {
+    private void writeReadWrite(Writer output, boolean read, boolean write) throws IOException {
         if (read && write) {
             output.append("--- ").append("Read-Write").append(NEW_LINE);
         } else if (read) {
@@ -335,7 +359,7 @@ public final class ApiFileWriter
         }
     }
 
-    private void writeSee(OutputStreamWriter output, List<String> seeAlso) throws IOException {
+    private void writeSee(Writer output, List<String> seeAlso) throws IOException {
         if (seeAlso != null && !seeAlso.isEmpty()) {
             for (String see : seeAlso) {
                 see = see.replace("::", "#");
@@ -344,11 +368,11 @@ public final class ApiFileWriter
         }
     }
 
-    private void writeClass(OutputStreamWriter output, String className) throws IOException {
+    private void writeClass(Writer output, String className) throws IOException {
         writeClass(output, className, "");
     }
 
-    private void writeClass(OutputStreamWriter output, String className, String parentClass) throws IOException {
+    private void writeClass(Writer output, String className, String parentClass) throws IOException {
         output.append("---@class ").append(className);
         if (!parentClass.isEmpty()) {
             output.append(" : ").append(parentClass);
@@ -356,7 +380,7 @@ public final class ApiFileWriter
         output.append(NEW_LINE);
     }
 
-    private void writeClass(OutputStreamWriter output, String className, List<String> parentClasses) throws IOException {
+    private void writeClass(Writer output, String className, List<String> parentClasses) throws IOException {
         if (parentClasses != null && !parentClasses.isEmpty()) {
             writeClass(output, className, parentClasses.get(0));
         } else {
@@ -364,23 +388,23 @@ public final class ApiFileWriter
         }
     }
 
-    private void writeShape(OutputStreamWriter output, String name) throws IOException {
+    private void writeShape(Writer output, String name) throws IOException {
         output.append("---@shape ").append(name).append(NEW_LINE);
     }
 
-    private void writeField(OutputStreamWriter output, String name, ValueType type, String description) throws IOException {
+    private void writeField(Writer output, String name, ValueType type, String description) throws IOException {
         writeField(output, name, type, description, false);
     }
 
-    private void writeField(OutputStreamWriter output, String name, String type, String description) throws IOException {
+    private void writeField(Writer output, String name, String type, String description) throws IOException {
         writeField(output, name, type, description, false);
     }
 
-    private void writeField(OutputStreamWriter output, String name, ValueType type, String description, boolean withNil) throws IOException {
+    private void writeField(Writer output, String name, ValueType type, String description, boolean withNil) throws IOException {
         writeField(output, name, getType(type), description, withNil);
     }
 
-    private void writeField(OutputStreamWriter output, String name, String type, String description, boolean withNil) throws IOException {
+    private void writeField(Writer output, String name, String type, String description, boolean withNil) throws IOException {
         output.append("---@field ").append(name).append(' ').append(type);
 
         if (withNil) {
@@ -390,19 +414,19 @@ public final class ApiFileWriter
         output.append(' ').append(description);
     }
 
-    private void writeType(OutputStreamWriter output, String type) throws IOException {
+    private void writeType(Writer output, String type) throws IOException {
         writeType(output, type, false);
     }
 
-    private void writeType(OutputStreamWriter output, ValueType type) throws IOException {
+    private void writeType(Writer output, ValueType type) throws IOException {
         writeType(output, getType(type), false);
     }
 
-    private void writeType(OutputStreamWriter output, ValueType type, boolean optional) throws IOException {
+    private void writeType(Writer output, ValueType type, boolean optional) throws IOException {
         writeType(output, getType(type), optional);
     }
 
-    private void writeType(OutputStreamWriter output, String type, boolean optional) throws IOException {
+    private void writeType(Writer output, String type, boolean optional) throws IOException {
         output.append("---@type ").append(type);
         if (optional) {
             output.append("|nil");
@@ -410,20 +434,20 @@ public final class ApiFileWriter
         output.append(NEW_LINE);
     }
 
-    private void writeParam(OutputStreamWriter output, String name, ValueType type, String description) throws IOException {
+    private void writeParam(Writer output, String name, ValueType type, String description) throws IOException {
         writeParam(output, name, getType(type), description);
     }
 
-    private void writeParam(OutputStreamWriter output, String name, String type) throws IOException {
+    private void writeParam(Writer output, String name, String type) throws IOException {
         writeParam(output, name, type, "");
     }
 
-    private void writeParam(OutputStreamWriter output, String name, String type, String description) throws IOException {
+    private void writeParam(Writer output, String name, String type, String description) throws IOException {
         description = description.replace('\n', ' ');
         output.append("---@param ").append(name).append(' ').append(type).append(' ').append(description).append(NEW_LINE);
     }
 
-    private void writeReturn(OutputStreamWriter output, ValueType type, String desc) throws IOException {
+    private void writeReturn(Writer output, ValueType type, String desc) throws IOException {
         output.append("---@return ").append(getType(type)).append(' ');
         if (!desc.isEmpty()) {
             desc = desc.replace('\n', ' ');
@@ -432,15 +456,15 @@ public final class ApiFileWriter
         output.append(NEW_LINE);
     }
 
-    private void writeOverload(OutputStreamWriter output, List<Parameter> parameters, String stopAt) throws IOException {
+    private void writeOverload(Writer output, List<Parameter> parameters, String stopAt) throws IOException {
         writeOverload(output, parameters, null, stopAt);
     }
 
-    private void writeOverload(OutputStreamWriter output, List<Parameter> parameters, ValueType returnType) throws IOException {
+    private void writeOverload(Writer output, List<Parameter> parameters, ValueType returnType) throws IOException {
         writeOverload(output, parameters, returnType, null);
     }
 
-    private void writeOverload(OutputStreamWriter output, List<Parameter> parameters, ValueType returnType, String stopAt) throws IOException {
+    private void writeOverload(Writer output, List<Parameter> parameters, ValueType returnType, String stopAt) throws IOException {
         // ---@overload fun(param1:A,param2:B):R
 
         output.append("---@overload fun(");
@@ -469,7 +493,7 @@ public final class ApiFileWriter
         output.append(NEW_LINE);
     }
 
-    private void writeAliasStringLiteral(OutputStreamWriter output, String name, List<String> types) throws IOException {
+    private void writeAliasStringLiteral(Writer output, String name, List<String> types) throws IOException {
         output.append("---@alias ").append(name);
 
         boolean first = true;
@@ -485,7 +509,7 @@ public final class ApiFileWriter
         output.append(NEW_LINE);
     }
 
-    private void writeAlias(OutputStreamWriter output, String name, List<ValueType> types) throws IOException {
+    private void writeAlias(Writer output, String name, List<ValueType> types) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         boolean first = true;
         for (ValueType type : types) {
@@ -499,7 +523,7 @@ public final class ApiFileWriter
         writeAlias(output, name, stringBuilder.toString());
     }
 
-    private void writeAlias(OutputStreamWriter output, String name, String type) throws IOException {
+    private void writeAlias(Writer output, String name, String type) throws IOException {
         output.append("---@alias ").append(name).append(' ').append(type).append(NEW_LINE);
     }
 
