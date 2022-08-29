@@ -37,6 +37,13 @@ public final class ApiFileWriter
     }
 
     private void writeConcepts(List<Concept> concepts) throws IOException {
+        output.append(NEW_LINE)
+                .append("----------------------------------------------").append(NEW_LINE)
+                .append("------------------ Concepts ------------------").append(NEW_LINE)
+                .append("----------------------------------------------").append(NEW_LINE)
+                .append(NEW_LINE).append(NEW_LINE).append(NEW_LINE)
+        ;
+
         for (Concept concept : concepts) {
             switch (concept.category) {
                 case "table": {
