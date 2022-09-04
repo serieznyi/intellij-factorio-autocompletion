@@ -170,7 +170,7 @@ public final class ApiFileWriter
             writeSee(output, factorioClass.seeAlso);
 
             for (Operator operator : factorioClass.operators) {
-                if (operator.name == "call") {
+                if (operator.isCall()) {
                     writeOverload(output, operator.method.parameters, operator.method.returnType);
                 }
             }
