@@ -27,4 +27,19 @@ public class Operator implements Arrangeable {
             attribute.arrangeElements();
         }
     }
+
+    public boolean isCall()
+    {
+        return name.equals("call");
+    }
+
+    public boolean isLength()
+    {
+        return name.equals("length");
+    }
+
+    public boolean isIndex()
+    {
+        return name.equals("index");
+    }
 }
