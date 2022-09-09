@@ -200,12 +200,6 @@ public final class ApiFileWriter
             writeDescLine(output, factorioClass.examples);
             writeSee(output, factorioClass.seeAlso);
 
-            for (Operator operator : factorioClass.operators) {
-                if (operator.isCall()) {
-                    writeOverload(output, operator.method.parameters, operator.method.returnType);
-                }
-            }
-
             writeClass(output, factorioClass.name, factorioClass.baseClasses);
             writeObjDef(output, factorioClass.name, true);
             output.append(NEW_LINE);
@@ -333,6 +327,15 @@ public final class ApiFileWriter
                 writeFunctionDef(output, className, method.name, strList.toArray(new String[0]));
             }
             output.append(NEW_LINE);
+        }
+    }
+
+    private void writeOperators(FactorioClass factorioClass, List<Operator> operators) throws IOException {
+        for (Operator operator : operators) {
+            switch (operator.getType()) {
+                case CALL -> writeOverload(output, operator.method.parameters, operator.method.returnType);
+                case INDEX, LENGTH -> writeAttribute(factorioClass.name, operator.attribute);
+            }
         }
     }
 
