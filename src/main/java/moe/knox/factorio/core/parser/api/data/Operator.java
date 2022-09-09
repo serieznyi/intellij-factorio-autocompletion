@@ -1,10 +1,10 @@
 package moe.knox.factorio.core.parser.api.data;
 
+import com.google.gson.annotations.JsonAdapter;
+import moe.knox.factorio.core.parser.api.data.desirealizer.OperatorJsonDeserializer;
+
+@JsonAdapter(OperatorJsonDeserializer.class)
 public class Operator implements Arrangeable {
-    /**
-     * "index", "length": Attributes
-     * "call": Method
-     */
     public String name;
     public Method method;
     public Attribute attribute;
@@ -19,18 +19,30 @@ public class Operator implements Arrangeable {
         }
     }
 
-    public boolean isCall()
+    public Type getType()
     {
-        return name.equals("call");
+        return Type.fromNativeName(name);
     }
 
-    public boolean isLength()
-    {
-        return name.equals("length");
-    }
+    public enum Type {
+        LENGTH("length"),
+        INDEX("index"),
+        CALL("call");
 
-    public boolean isIndex()
-    {
-        return name.equals("index");
+        private final String nativeName;
+
+        Type(String nativeName) {
+            this.nativeName = nativeName;
+        }
+
+        public static Type fromNativeName(String nativeName) {
+            for (Type b : Type.values()) {
+                if (b.nativeName.equals(nativeName)) {
+                    return b;
+                }
+            }
+
+            return null;
+        }
     }
 }
