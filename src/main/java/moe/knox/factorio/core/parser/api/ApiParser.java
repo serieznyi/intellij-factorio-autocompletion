@@ -164,7 +164,7 @@ public class ApiParser extends Parser {
 
         runtimeApi = apiSpecificationParser.parse(config.selectedFactorioVersion);
 
-        var outputFileName = saveDir + "factorio.lua";
+        var outputFileName = Paths.get(saveDir, "factorio.lua").toString();
 
         try (var writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFileName)))) {
             ApiFileWriter.fromIoWriter(writer).writeRuntimeApi(runtimeApi);
