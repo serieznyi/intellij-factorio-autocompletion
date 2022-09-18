@@ -1,12 +1,14 @@
 package moe.knox.factorio.core.parser.api.writer;
 
 import moe.knox.factorio.core.parser.api.data.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public final class ApiFileWriter
 {
@@ -25,9 +27,7 @@ public final class ApiFileWriter
     public void writeRuntimeApi(RuntimeApi runtimeApi) throws IOException {
         writeGlobalsObjects(runtimeApi.globalObjects);
 
-        output.append("---@class defines").append(NEW_LINE);
-        output.append("defines = {}").append(NEW_LINE).append(NEW_LINE);
-        writeDefines(runtimeApi.defines, "defines");
+        writeDefines(runtimeApi.defines);
 
         // TODO: implement autocompletion for events
 
@@ -36,133 +36,70 @@ public final class ApiFileWriter
         writeConcepts(runtimeApi.concepts);
     }
 
-    private void writeConcepts(List<Concept> concepts) throws IOException {
+    private void writeHeaderBlock(@NotNull String blockName) throws IOException {
         output.append(NEW_LINE)
                 .append("----------------------------------------------").append(NEW_LINE)
-                .append("------------------ Concepts ------------------").append(NEW_LINE)
+                .append("-".repeat(10)).append(" ").append(blockName).append(NEW_LINE)
                 .append("----------------------------------------------").append(NEW_LINE)
                 .append(NEW_LINE).append(NEW_LINE).append(NEW_LINE)
         ;
+    }
+
+    private void writeConcepts(List<Concept> concepts) throws IOException {
+        writeHeaderBlock("Concepts");
 
         for (Concept concept : concepts) {
-            switch (concept.category) {
-                case "table": {
-                    writeDescLine(output, concept.description);
-                    writeDescLine(output, concept.notes);
-                    writeDescLine(output, concept.examples);
-                    writeSee(output, concept.seeAlso);
-                    writeClass(output, concept.name);
-                    writeObjDef(output, concept.name, true);
+            switch (concept.type().getName()) {
+                case TABLE -> {
+                    var conceptType = (ValueType.Table) concept.type();
+
+                    writeDescLine(output, concept.description());
+                    writeDescLine(output, concept.notes());
+                    writeDescLine(output, concept.examples());
+                    writeSee(output, concept.seeAlso());
+                    writeClass(output, concept.name());
+                    writeObjDef(output, concept.name(), true);
                     output.append(NEW_LINE);
 
-                    for (Parameter parameter : concept.table.parameters) {
+                    for (Parameter parameter : conceptType.parameters()) {
                         writeDescLine(output, parameter.description);
                         writeType(output, parameter.type, parameter.optional);
-                        writeValDef(output, parameter.name, concept.name);
+                        writeValDef(output, parameter.name, concept.name());
                         output.append(NEW_LINE);
                     }
-                    break;
-                }
-                case "table_or_array": {
-                    writeDescLine(output, concept.description);
-                    writeDescLine(output, concept.notes);
-                    writeDescLine(output, concept.examples);
-                    writeSee(output, concept.seeAlso);
-                    writeShape(output, concept.name);
-
-                    int i = 1;
-                    for (Parameter parameter : concept.tableOrArray.parameters) {
-                        writeField(output, parameter.name, parameter.type, parameter.description);
-                        writeField(output, "[" + i + "]", parameter.type, parameter.description);
-                        ++i;
-                    }
 
                     output.append(NEW_LINE);
-                    break;
                 }
-                case "enum": {
-                    writeDescLine(output, concept.description);
-                    writeDescLine(output, concept.notes);
-                    writeDescLine(output, concept.examples);
-                    writeSee(output, concept.seeAlso);
-                    writeClass(output, concept.name);
+                case UNION -> {
+                    var conceptType = (ValueType.Union) concept.type();
 
-                    for (BasicMember option : concept._enum.options) {
-                        String desc = "(Enum) " + option.description;
-                        writeField(output, option.name, "number", desc);
+                    writeDescLine(output, concept.description());
+                    writeDescLine(output, concept.notes());
+                    writeDescLine(output, concept.examples());
+                    writeSee(output, concept.seeAlso());
+
+                    var types = new ArrayList<ValueType>();
+                    for (ValueType optionType : conceptType.options()) {
+                        types.add(optionType);
+                        writeDescLine(output, getType(optionType) + ": " + optionType.getDescription());
                     }
+                    writeAlias(output, concept.name(), types);
 
                     output.append(NEW_LINE);
-                    break;
                 }
-                case "flag": {
-                    // define string-literal type
-                    String aliasName = concept.name + "Value";
-                    List<String> types = new ArrayList<>();
-                    for (BasicMember option : concept.flag.options) {
-                        types.add(option.name);
-                    }
-                    writeAliasStringLiteral(output, aliasName, types);
-                    output.append(NEW_LINE);
-
-                    writeDescLine(output, concept.description);
-                    writeDescLine(output, concept.notes);
-                    writeDescLine(output, concept.examples);
-                    writeSee(output, concept.seeAlso);
-
-                    // actual type is string-literal array
-                    writeAlias(output, concept.name, aliasName + "[]");
-
-                    output.append(NEW_LINE);
-                    break;
-                }
-                case "union": {
-                    writeDescLine(output, concept.description);
-                    writeDescLine(output, concept.notes);
-                    writeDescLine(output, concept.examples);
-                    writeSee(output, concept.seeAlso);
-
-                    List<ValueType> types = new ArrayList<>();
-                    for (Concept.CategoryUnion.Spec option : concept.union.options) {
-                        types.add(option.type);
-                        writeDescLine(output,getType(option.type) + ": " + option.description);
-                    }
-                    writeAlias(output, concept.name, types);
-                    break;
-                }
-                case "filter": {
-                    writeDescLine(output, concept.description);
-                    writeDescLine(output, concept.notes);
-                    writeDescLine(output, concept.examples);
-                    writeSee(output, concept.seeAlso);
-                    writeShape(output, concept.name);
-                    writeObjDef(output, concept.name, true);
-
-                    for (Parameter parameter : concept.filter.parameters) {
-                        writeDescLine(output, parameter.description);
-                        writeType(output, parameter.type, parameter.optional);
-                        writeValDef(output, parameter.name, concept.name);
-                        output.append(NEW_LINE);
-                    }
-                    break;
-                }
-                case "struct": {
-                    writeDescLine(output, concept.description);
-                    writeDescLine(output, concept.notes);
-                    writeDescLine(output, concept.examples);
-                    writeSee(output, concept.seeAlso);
-                    writeClass(output, concept.name);
-                    writeObjDef(output, concept.name, true);
-
-                    writeAttributes(output, concept.struct.attributes, concept.name);
-                    output.append(NEW_LINE);
-                    break;
-                }
+                case DICTIONARY -> {}
+                case STRUCT -> {}
+                case SIMPLE -> {}
+                case TUPLE -> {}
+                case ARRAY -> {}
+                default -> throw new IllegalArgumentException("Unknown concept type: " + concept.type().getName());
             }
         }
     }
 
     private void writeGlobalsObjects(List<GlobalObject> globalObjects) throws IOException {
+        writeHeaderBlock("Global objects");
+
         // global objects
         for (GlobalObject globalObject : globalObjects) {
             writeDescLine(output, globalObject.description);
@@ -171,6 +108,14 @@ public final class ApiFileWriter
             output.append(NEW_LINE);
         }
         output.append(NEW_LINE);
+    }
+
+    private void writeDefines(List<Define> defines) throws IOException {
+        writeHeaderBlock("Defines");
+
+        output.append("---@class defines").append(NEW_LINE);
+        output.append("defines = {}").append(NEW_LINE).append(NEW_LINE);
+        writeDefines(defines, "defines");
     }
 
     private void writeDefines(List<Define> defines, String parents) throws IOException {
@@ -194,6 +139,8 @@ public final class ApiFileWriter
     }
 
     private void writeClasses(List<FactorioClass> classes) throws IOException {
+        writeHeaderBlock("Classes");
+
         for (FactorioClass factorioClass : classes) {
             writeDescLine(output, factorioClass.description);
             writeDescLine(output, factorioClass.notes);
@@ -206,6 +153,7 @@ public final class ApiFileWriter
 
             writeAttributes(output, factorioClass.attributes, factorioClass.name);
             writeMethods(output, factorioClass.methods, factorioClass.name);
+            writeOperators(factorioClass, factorioClass.operators);
 
             output.append(NEW_LINE);
         }
@@ -278,15 +226,19 @@ public final class ApiFileWriter
 
     private void writeAttributes(Writer output, List<Attribute> attributes, String className) throws IOException {
         for (Attribute attribute : attributes) {
-            writeDescLine(output, attribute.description);
-            writeDescLine(output, attribute.notes);
-            writeDescLine(output, attribute.examples);
-            writeSee(output, attribute.seeAlso);
-            writeReadWrite(output, attribute.read, attribute.write);
-            writeType(output, attribute.type);
-            writeValDef(output, attribute.name, className);
-            output.append(NEW_LINE);
+            writeAttribute(className, attribute);
         }
+    }
+
+    private void writeAttribute(String className, Attribute attribute) throws IOException {
+        writeDescLine(output, attribute.description);
+        writeDescLine(output, attribute.notes);
+        writeDescLine(output, attribute.examples);
+        writeSee(output, attribute.seeAlso);
+        writeReadWrite(output, attribute.read, attribute.write);
+        writeType(output, attribute.type);
+        writeValDef(output, attribute.name, className);
+        output.append(NEW_LINE);
     }
 
     private void writeMethods(Writer output, List<Method> methods, String className) throws IOException {
@@ -473,7 +425,6 @@ public final class ApiFileWriter
     private void writeOverload(Writer output, List<Parameter> parameters, ValueType returnType) throws IOException {
         writeOverload(output, parameters, returnType, null);
     }
-
     private void writeOverload(Writer output, List<Parameter> parameters, ValueType returnType, String stopAt) throws IOException {
         // ---@overload fun(param1:A,param2:B):R
 
