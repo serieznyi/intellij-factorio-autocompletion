@@ -44,6 +44,9 @@ final class AnnotationTypeResolver
             case FUNCTION -> presentFunction((ValueType.Function) type);
             case TABLE -> presentTable((ValueType.Table) type);
             case LUA_LAZY_LOADED_VALUE -> type.getName().getNativeName(); // TODO override `LuaLazyLoadedValue` class with generic
+            case TUPLE -> presentTuple((ValueType.Tuple) type);
+            case TYPE -> presentType((ValueType.Type) type);
+            case LITERAL -> presentLiteral((ValueType.Literal) type);
             default -> throw new IllegalStateException("Unexpected value: " + type.getName().getNativeName());
         };
     }
@@ -118,5 +121,34 @@ final class AnnotationTypeResolver
      */
     private static String presentTable(ValueType.Table type) {
         return presentTableParams(type.parameters());
+    }
+
+    private static String presentTuple(ValueType.Tuple type) {
+        // TODO how present tuple ??
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean first = true;
+        for (ValueType.Tuple.TypeTupleParameter parameter : type.parameters()) {
+            if (!first) {
+                stringBuilder.append(',');
+            }
+            first = false;
+            stringBuilder
+                    .append(getType(parameter.type()))
+                    .append(" ")
+                    .append(parameter.name())
+            ;
+        }
+
+        return stringBuilder.toString();
+    }
+
+    private static String presentType(ValueType.Type typeWithDescription) {
+        // TODO how present type ??
+        return typeWithDescription.value();
+    }
+
+    private static String presentLiteral(ValueType.Literal type) {
+        // TODO how present literal ??
+        return type.value();
     }
 }
