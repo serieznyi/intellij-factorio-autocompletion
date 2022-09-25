@@ -8,7 +8,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public final class ApiFileWriter
 {
