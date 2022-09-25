@@ -171,16 +171,8 @@ public final class ApiFileWriter
         output.append(className).append(" = {}").append(NEW_LINE);
     }
 
-    private void writeValDef(Writer output, String name) throws IOException {
-        writeValDef(output, name, null, false);
-    }
-
     private void writeValDef(Writer output, String name, String parent) throws IOException {
         writeValDef(output, name, parent, false);
-    }
-
-    private void writeValDef(Writer output, String name, boolean local) throws IOException {
-        writeValDef(output, name, null, local);
     }
 
     private void writeValDef(Writer output, String name, String parent, boolean local) throws IOException {
@@ -350,32 +342,6 @@ public final class ApiFileWriter
         }
     }
 
-    private void writeShape(Writer output, String name) throws IOException {
-        output.append("---@shape ").append(name).append(NEW_LINE);
-    }
-
-    private void writeField(Writer output, String name, ValueType type, String description) throws IOException {
-        writeField(output, name, type, description, false);
-    }
-
-    private void writeField(Writer output, String name, String type, String description) throws IOException {
-        writeField(output, name, type, description, false);
-    }
-
-    private void writeField(Writer output, String name, ValueType type, String description, boolean withNil) throws IOException {
-        writeField(output, name, getType(type), description, withNil);
-    }
-
-    private void writeField(Writer output, String name, String type, String description, boolean withNil) throws IOException {
-        output.append("---@field ").append(name).append(' ').append(type);
-
-        if (withNil) {
-            output.append("|nil");
-        }
-
-        output.append(' ').append(description);
-    }
-
     private void writeType(Writer output, String type) throws IOException {
         writeType(output, type, false);
     }
@@ -418,10 +384,6 @@ public final class ApiFileWriter
         output.append(NEW_LINE);
     }
 
-    private void writeOverload(Writer output, List<Parameter> parameters, String stopAt) throws IOException {
-        writeOverload(output, parameters, null, stopAt);
-    }
-
     private void writeOverload(Writer output, List<Parameter> parameters, ValueType returnType) throws IOException {
         writeOverload(output, parameters, returnType, null);
     }
@@ -451,22 +413,6 @@ public final class ApiFileWriter
             output.append(':').append(getType(returnType));
         }
 
-        output.append(NEW_LINE);
-    }
-
-    private void writeAliasStringLiteral(Writer output, String name, List<String> types) throws IOException {
-        output.append("---@alias ").append(name);
-
-        boolean first = true;
-        for (String type : types) {
-            if (first) {
-                first = false;
-            } else {
-                output.append('|');
-            }
-
-            output.append('"').append(type).append('"');
-        }
         output.append(NEW_LINE);
     }
 
