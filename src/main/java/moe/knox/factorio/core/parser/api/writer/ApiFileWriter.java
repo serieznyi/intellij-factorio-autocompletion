@@ -8,7 +8,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public final class ApiFileWriter
 {
@@ -242,7 +241,7 @@ public final class ApiFileWriter
 
             if (method.takesTable) {
                 // This is a table function (use anonymous function as only param)
-                String paramType = TypeResolver.presentTableParams(method.parameters);
+                String paramType = AnnotationTypeResolver.presentTableParams(method.parameters);
 
                 writeParam(output, "param", paramType);
 
@@ -436,6 +435,6 @@ public final class ApiFileWriter
 
     private String getType(ValueType type)
     {
-        return TypeResolver.getType(type);
+        return AnnotationTypeResolver.getType(type);
     }
 }
