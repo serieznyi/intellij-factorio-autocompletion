@@ -97,7 +97,17 @@ public final class ApiFileWriter
 
                     output.append(NEW_LINE);
                 }
-                case DICTIONARY, STRUCT, TUPLE, ARRAY -> {
+                case DICTIONARY -> {
+                    var conceptType = (ValueType.Dictionary) concept.type();
+
+                    writeDescLine(output, concept.description());
+                    writeDescLine(output, concept.notes());
+                    writeDescLine(output, concept.examples());
+                    writeSee(output, concept.seeAlso());
+                    writeAlias(output, concept.name(), getType(conceptType));
+                    output.append(NEW_LINE);
+                }
+                case STRUCT, TUPLE, ARRAY -> {
                     // TODO add logic
                 }
                 default -> throw new IllegalArgumentException("Unknown concept type: " + concept.type().getName());
