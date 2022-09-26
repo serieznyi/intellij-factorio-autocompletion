@@ -149,6 +149,6 @@ final class AnnotationTypeResolver
 
     private static String presentLiteral(ValueType.Literal type) {
         // TODO how present literal ??
-        return type.value();
+        return "\"" + type.value() + "\"";
     }
 }
