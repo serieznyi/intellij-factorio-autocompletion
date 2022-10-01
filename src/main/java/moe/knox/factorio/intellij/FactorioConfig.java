@@ -4,11 +4,11 @@ import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.NlsContexts;
-import moe.knox.factorio.core.version.FactorioApiVersion;
-import moe.knox.factorio.core.parser.api.ApiParser;
-import moe.knox.factorio.core.LuaLibDownloader;
-import moe.knox.factorio.core.parser.prototype.PrototypeParser;
-import moe.knox.factorio.core.version.ApiVersionResolver;
+import moe.knox.factorio.core.version.FactorioVersion;
+import moe.knox.factorio.core.version.FactorioVersionResolver;
+import moe.knox.factorio.intellij.service.ApiService;
+import moe.knox.factorio.intellij.service.FactorioDataService;
+import moe.knox.factorio.intellij.service.PrototypeService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,15 +25,15 @@ public class FactorioConfig implements SearchableConfigurable {
     private JComboBox<DropdownVersion> selectApiVersion;
     private JLabel loadError;
     private JButton reloadButton;
-    private final ApiVersionResolver apiVersionResolver;
+    private final FactorioVersionResolver factorioVersionResolver;
     @NotNull
-    private final FactorioApiVersion latestExistingVersion;
+    private final FactorioVersion latestExistingVersion;
 
     public FactorioConfig(@NotNull Project project) throws IOException {
         this.project = project;
         config = FactorioState.getInstance(project);
-        apiVersionResolver = new ApiVersionResolver();
-        latestExistingVersion = apiVersionResolver.supportedVersions().latestVersion();
+        factorioVersionResolver = new FactorioVersionResolver();
+        latestExistingVersion = factorioVersionResolver.supportedVersions().latestVersion();
 
         enableFactorioIntegrationCheckBox.setSelected(config.integrationActive);
 
@@ -42,7 +42,7 @@ public class FactorioConfig implements SearchableConfigurable {
             var latestDropdownVersion = DropdownVersion.createLatest();
 
             selectApiVersion.addItem(latestDropdownVersion);
-            apiVersionResolver
+            factorioVersionResolver
                     .supportedVersions()
                     .stream()
                     .sorted(Comparator.reverseOrder())
@@ -112,9 +112,9 @@ public class FactorioConfig implements SearchableConfigurable {
         }
 
         if (isVersionChanged()) {
-            ApiParser.removeCurrentAPI(project);
-            LuaLibDownloader.removeCurrentLualib(project);
-            LuaLibDownloader.checkForUpdate(project);
+            ApiService.getInstance(project).removeLibraryFiles();
+            FactorioDataService.getInstance(project).removeLibraryFiles();
+            FactorioDataService.getInstance(project).checkForUpdate();
         }
 
         reloadButton.setEnabled(enableFactorioIntegrationCheckBox.isSelected());
@@ -128,30 +128,30 @@ public class FactorioConfig implements SearchableConfigurable {
 
     private void removeParsedLibraries()
     {
-        ApiParser.removeCurrentAPI(project);
-        PrototypeParser.removeCurrentPrototypes();
-        LuaLibDownloader.removeCurrentLualib(project);
+        ApiService.getInstance(project).removeLibraryFiles();
+        PrototypeService.getInstance(project).removeLibraryFiles();
+        FactorioDataService.getInstance(project).removeLibraryFiles();
     }
 
     private void updateLibraries()
     {
-        ApiParser.checkForUpdate(project);
-        PrototypeParser.getCurrentPrototypeLink(project);
-        LuaLibDownloader.checkForUpdate(project);
+        ApiService.getInstance(project).checkForUpdate();
+        PrototypeService.getInstance(project).checkForUpdate();
+        FactorioDataService.getInstance(project).checkForUpdate();
     }
 
     private boolean isUseLatestVersion() {
         return Objects.requireNonNull((DropdownVersion) selectApiVersion.getSelectedItem()).isLatest();
     }
 
-    private FactorioApiVersion getSelectedVersion() {
+    private FactorioVersion getSelectedVersion() {
         var dropdownVersion = Objects.requireNonNull((DropdownVersion) selectApiVersion.getSelectedItem());
 
         if (dropdownVersion.isLatest()) {
             return latestExistingVersion;
         }
 
-        return FactorioApiVersion.createVersion(dropdownVersion.version);
+        return FactorioVersion.createVersion(dropdownVersion.version);
     }
 
     private boolean isVersionChanged()
@@ -175,7 +175,7 @@ public class FactorioConfig implements SearchableConfigurable {
             return new DropdownVersion("latest", "Latest version");
         }
 
-        public static DropdownVersion fromApiVersion(FactorioApiVersion v)
+        public static DropdownVersion fromApiVersion(FactorioVersion v)
         {
             return new DropdownVersion(v.version(), v.version());
         }

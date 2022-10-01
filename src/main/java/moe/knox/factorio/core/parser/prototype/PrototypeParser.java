@@ -1,18 +1,9 @@
 package moe.knox.factorio.core.parser.prototype;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.PathManager;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.NlsContexts;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
-import com.tang.intellij.lua.search.SearchContext;
-import moe.knox.factorio.core.NotificationService;
-import moe.knox.factorio.core.parser.Parser;
-import moe.knox.factorio.intellij.FactorioState;
-import moe.knox.factorio.core.FactorioPrototypeState;
-import moe.knox.factorio.intellij.FactorioLibraryProvider;
+import moe.knox.factorio.core.version.FactorioVersion;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.HttpStatusException;
@@ -24,24 +15,18 @@ import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-public class PrototypeParser extends Parser {
-    public static final String prototypeRootPath = PathManager.getPluginsPath() + "/factorio_autocompletion/factorio_prototypes/";
-    private static final String prototypeLibPath = prototypeRootPath + "library/";
-    public static final String prototypesBaseLink = "https://wiki.factorio.com";
-
-    private static AtomicBoolean downloadInProgress = new AtomicBoolean(false);
-
-    private FactorioState config;
-    private ProgressIndicator indicator;
-    private String saveDir;
-
-    private static List<String> rootTypes = new ArrayList<>() {{
+public class PrototypeParser {
+    private static final Logger LOG = Logger.getInstance(PrototypeParser.class);
+    private final static String prototypesBaseLink = "https://wiki.factorio.com";
+    private final static String NEW_LINE = System.lineSeparator();
+    private final static List<String> rootTypes = new ArrayList<>() {{
         add("float");
         add("double");
         add("int");
@@ -58,8 +43,7 @@ public class PrototypeParser extends Parser {
         add("LocalisedString");
         add("bool");
     }};
-
-    private static List<String> prototypeTypeWhitelist = new ArrayList<>() {{
+    private final static List<String> prototypeTypeWhitelist = new ArrayList<>() {{
         add("Types/ItemProductPrototype");
         add("Types/ItemToPlace");
         add("Types/DamagePrototype");
@@ -70,129 +54,70 @@ public class PrototypeParser extends Parser {
      */
     private Map<String, String> propertyTypes = new HashMap<>();
 
+    private final Path prototypesRootPath;
 
-    public PrototypeParser(@Nullable Project project, @NlsContexts.ProgressTitle @NotNull String title, @NotNull String saveDir) {
-        super(project, title, false);
-        this.saveDir = saveDir;
+    public PrototypeParser(Path prototypesRootPath) {
+
+        this.prototypesRootPath = prototypesRootPath;
     }
 
-    public static String getCurrentPrototypeLink(Project project) {
-        // return null if download is in progress
-        if (downloadInProgress.get()) {
-            return null;
-        }
+    public @Nullable Path getPrototypePath(FactorioVersion version)
+    {
+        Path versionPath = prototypesRootPath.resolve(version.version());
 
-        // check if prototypes are downloaded
-        File protoPathFile = new File(prototypeLibPath);
-        if (protoPathFile.exists()) {
-            return prototypeLibPath;
-        } else {
-            if (downloadInProgress.compareAndSet(false, true)) {
-                ProgressManager.getInstance().run(new PrototypeParser(project, "Download and Parse Factorio Prototypes", prototypeLibPath));
-            }
-            return null;
-        }
+        return Files.exists(versionPath) ? versionPath : null;
     }
 
-    public static void removeCurrentPrototypes() {
-        if (!downloadInProgress.get()) {
-            String apiPath = prototypeRootPath;
-            FileUtil.delete(new File(apiPath));
-            FactorioLibraryProvider.reload();
-        }
+    public void removeFiles() {
+        FileUtil.delete(prototypesRootPath.toFile());
     }
 
-    @Override
-    public void run(@NotNull ProgressIndicator progressIndicator) {
-        this.indicator = progressIndicator;
-        this.config = FactorioState.getInstance(myProject);
+    public void parse(FactorioVersion version) throws IOException {
+        Path prototypesSubdirPath = prototypesRootPath.resolve(version.version());
 
-        // start the whole thing
-        assureDir();
-
-        downloadInProgress.set(false);
-
-        // whole thing finished, reload the Library-Provider
-        ApplicationManager.getApplication().invokeLater(() -> FactorioLibraryProvider.reload());
-    }
-
-    /**
-     * Entry-point with creating the used directory
-     * It will assure, that the directory is there and will start the downloading and parsing.
-     */
-    private void assureDir() {
-        File dirFile = new File(saveDir);
-        if (!dirFile.exists()) {
-            // file does not exist ... create it
-            if (dirFile.mkdirs()) {
-                // download and parse API
-                downloadAndParsePrototypes();
-            } else {
-                NotificationService.getInstance(myProject).notifyErrorCreatingPrototypeDirs();
-            }
-        }
-    }
-    private double curTodo = 0;
-    private double maxTodo = 0;
-
-
-    private void updateIndicator() {
-        indicator.setFraction(curTodo / maxTodo);
-        curTodo++;
-    }
-
-    /**
-     * Entry-point for parsing
-     * Download the main Prototype-Page and parse all prototypes
-     */
-    private void downloadAndParsePrototypes() {
-        indicator.setIndeterminate(false);
-
-        String prototypesOverviewLink = prototypesBaseLink + "/Prototype_definitions";
-        Document protoOverview;
-        try {
-            protoOverview = Jsoup.connect(prototypesOverviewLink).get();
-        } catch (IOException e) {
-            System.out.println("error downloading the main Prototype page");
-            showDownloadingError(false);
+        if (Files.exists(prototypesSubdirPath)) {
             return;
         }
 
-        // get links to prototypes
-        Elements prototypeElements = protoOverview.select("#mw-content-text ul a");
-        maxTodo = prototypeElements.size();
-        updateIndicator();
+        Files.createDirectories(prototypesSubdirPath);
 
+        parseInternal(version);
+    }
+
+    public List<String> parsePrototypeTypes() throws IOException {
+        String prototypesOverviewLink = prototypesBaseLink + "/Prototype_definitions";
+        Document protoOverview = Jsoup.connect(prototypesOverviewLink).get();
+        Elements prototypeElements = protoOverview.select("#mw-content-text ul a");
         List<String> prototypeIds = new ArrayList<>();
+        Path tempPrototypesDir = Files.createTempDirectory("prototypes");
 
         for (Element prototypeElement : prototypeElements) {
-            Prototype prototype = new Prototype(true);
+            Prototype prototype = new Prototype(tempPrototypesDir, true);
             if (!prototype.parsePrototype(prototypeElement.attr("href"))) {
                 break;
             }
             if (prototype.id != null && !prototype.id.equals("abstract")) {
                 prototypeIds.add(prototype.id);
             }
-            updateIndicator();
         }
 
-        FactorioPrototypeState.getInstance().setPrototypeTypes(prototypeIds);
+        return prototypeIds;
+    }
 
-        // update indicator max value
-        maxTodo += propertyTypes.size();
+    private void parseInternal(FactorioVersion version) throws IOException {
+        Path prototypesSubdirPath = prototypesRootPath.resolve(version.version());
 
-        SearchContext searchContext = SearchContext.Companion.get(getProject());
+        parsePrototypeTypes();
 
         propertyTypes.forEach((typeName, typeLink) -> {
             if (!rootTypes.contains(typeName)) {
                 // parse additional types, like normal Prototypes
-                Prototype prototype = new Prototype();
+                Prototype prototype = new Prototype(prototypesSubdirPath);
                 prototype.name = typeName;
 
                 // All unsuccessful types are hardcoded in the lua library
                 prototype.parsePrototype(typeLink);
             }
-            updateIndicator();
         });
     }
 
@@ -200,16 +125,18 @@ public class PrototypeParser extends Parser {
         String name;
         String id;
         String parentType;
-        boolean catchTypes = false;
+        boolean catchTypes;
         List<String> description = new ArrayList<>();
         List<Property> properties = new ArrayList<>();
+        private Path prototypeDir;
 
-        public Prototype() {
-
+        public Prototype(Path prototypeDir, boolean catchTypes) {
+            this.prototypeDir = prototypeDir;
+            this.catchTypes = catchTypes;
         }
 
-        public Prototype(boolean catchTypes) {
-            this.catchTypes = catchTypes;
+        public Prototype(Path prototypeDir) {
+            this.prototypeDir = prototypeDir;
         }
 
         /**
@@ -222,13 +149,15 @@ public class PrototypeParser extends Parser {
             String prototypeLink = prototypesBaseLink + link;
             Document prototypeDoc;
             try {
-                prototypeDoc = Jsoup.connect(prototypeLink).get();
+                prototypeDoc = Jsoup.connect(prototypeLink).timeout(10 * 1000).get();
             } catch (IOException e) {
                 if (e instanceof HttpStatusException && ((HttpStatusException) e).getStatusCode() == 404) {
                     return true;
                 }
-                System.out.printf("error downloading the single prototype page: %s", link);
-                showDownloadingError(false);
+
+                LOG.error("error downloading the single prototype page: %s".formatted(link));
+                LOG.error(e);
+
                 return false;
             }
 
@@ -353,6 +282,18 @@ public class PrototypeParser extends Parser {
             return true;
         }
 
+        /**
+         * removed "::" and all variants of newLines from the given string and returns it.
+         *
+         * @param s remove from this String
+         * @return string with removed things
+         */
+        @NotNull
+        @Contract(pure = true)
+        private String removeNewLines(@NotNull String s) {
+            return s.replaceAll("(::)|(\\r\\n|\\r|\\n)", "");
+        }
+
         private void parseInlineType(@NotNull Element element, @NotNull Property property) {
             Elements tableElements = element.children();
 
@@ -413,58 +354,68 @@ public class PrototypeParser extends Parser {
             saveTable(typeFileContent, this.description, this.name, this.parentType, this.properties);
 
             // create file
-            String typeDir = saveDir + this.name + ".lua";
+            String typeDir = prototypeDir.resolve(this.name + ".lua").toString();
             saveStringToFile(typeDir, typeFileContent.toString());
+        }
+
+        private void saveStringToFile(String filePath, String fileContent) {
+            try {
+                File file = new File(filePath);
+                file.createNewFile();
+                com.google.common.io.Files.write(fileContent.getBytes(), file);
+            } catch (IOException e) {
+                LOG.error(e);
+            }
         }
 
         private void saveTable(StringBuilder fileContent, List<String> description, String name, @Nullable String parentType, List<Property> properties) {
             for (String s : description) {
-                fileContent.append("---").append(s).append(newLine);
+                fileContent.append("---").append(s).append(NEW_LINE);
             }
 
             fileContent.append("---@class ").append(name);
             if (parentType != null && !parentType.isEmpty()) {
                 fileContent.append(" : ").append(parentType);
             }
-            fileContent.append(newLine);
-            fileContent.append("local ").append(name).append(" = {}").append(newLine).append(newLine);
+            fileContent.append(NEW_LINE);
+            fileContent.append("local ").append(name).append(" = {}").append(NEW_LINE).append(NEW_LINE);
 
             // add all properties
             for (Property property : properties) {
                 for (String s : property.description) {
-                    fileContent.append("--- ").append(s).append(newLine);
+                    fileContent.append("--- ").append(s).append(NEW_LINE);
                 }
 
                 // add type
-                fileContent.append("---@type ").append(property.type).append(newLine);
+                fileContent.append("---@type ").append(property.type).append(NEW_LINE);
 
                 // add attribute definition
-                fileContent.append(name).append(".").append(property.name).append(" = nil").append(newLine).append(newLine);
+                fileContent.append(name).append(".").append(property.name).append(" = nil").append(NEW_LINE).append(NEW_LINE);
 
                 if (property.inlineType.properties.size() > 0) {
                     saveTable(fileContent, new ArrayList<>(), property.type, null, property.inlineType.properties);
                 }
             }
         }
-    }
 
-    private class Property {
-        String name;
-        String type;
-        SubPrototype inlineType = new SubPrototype();
-        List<String> description = new ArrayList<>();
-        boolean optional = false;
+        private static class Property {
+            String name;
+            String type;
+            SubPrototype inlineType = new SubPrototype();
+            List<String> description = new ArrayList<>();
+            boolean optional = false;
 
-        public Property() {
+            public Property() {
 
+            }
+
+            public Property(String name) {
+                this.name = name;
+            }
         }
 
-        public Property(String name) {
-            this.name = name;
+        private static class SubPrototype {
+            List<Property> properties = new ArrayList<>();
         }
-    }
-
-    private class SubPrototype {
-        List<Property> properties = new ArrayList<>();
     }
 }
