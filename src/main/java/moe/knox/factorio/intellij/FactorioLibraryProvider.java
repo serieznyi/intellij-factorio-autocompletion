@@ -17,7 +17,7 @@ import com.tang.intellij.lua.lang.LuaIcons;
 import com.tang.intellij.lua.psi.LuaFileUtil;
 import lombok.CustomLog;
 import moe.knox.factorio.core.parser.api.ApiParser;
-import moe.knox.factorio.core.parser.prototype.PrototypeParser;
+import moe.knox.factorio.intellij.library.service.PrototypeService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,6 +25,7 @@ import javax.swing.*;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.*;
+import java.nio.file.Path;
 
 @CustomLog
 public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
@@ -73,9 +74,9 @@ public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
         }
 
         // protoDir for downloaded factorio prototypes
-        String downloadedProtoDir = PrototypeParser.getCurrentPrototypeLink(project);
-        if (downloadedProtoDir != null && !downloadedProtoDir.isEmpty()) {
-            libList.add(createLibrary(downloadedProtoDir, "Factorio Prototypes"));
+        Path downloadedProtoDir = PrototypeService.getInstance(project).getPrototypePath();
+        if (downloadedProtoDir != null) {
+            libList.add(createLibrary(downloadedProtoDir.toString(), "Factorio Prototypes"));
         }
 
         // corePrototypes "core" dir
