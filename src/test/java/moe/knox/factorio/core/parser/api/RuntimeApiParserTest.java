@@ -12,8 +12,8 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ApiSpecificationParserTest {
-    private ApiSpecificationParser service;
+public class RuntimeApiParserTest {
+    private RuntimeApiParser service;
 
     public static Set<FactorioApiVersion> providerVersions() throws IOException {
         return (new ApiVersionResolver()).supportedVersions();
@@ -21,7 +21,7 @@ public class ApiSpecificationParserTest {
 
     @BeforeEach
     protected void setUp() {
-        service = new ApiSpecificationParser();
+        service = new RuntimeApiParser();
     }
 
     @ParameterizedTest

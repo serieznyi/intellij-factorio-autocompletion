@@ -1,6 +1,6 @@
 package moe.knox.factorio.core.parser.api.writer;
 
-import moe.knox.factorio.core.parser.api.ApiSpecificationParser;
+import moe.knox.factorio.core.parser.api.RuntimeApiParser;
 import moe.knox.factorio.core.version.ApiVersionResolver;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.CleanupMode;
@@ -15,7 +15,7 @@ import java.nio.file.Path;
 public class ApiFileWriterTest {
     @Test
     void writeRuntimeApi(@TempDir(cleanup = CleanupMode.NEVER) Path tempDir) throws IOException {
-        var parser = new ApiSpecificationParser();
+        var parser = new RuntimeApiParser();
         var version = (new ApiVersionResolver()).supportedVersions().latestVersion();
         var runtimeApi = parser.parse(version);
 
