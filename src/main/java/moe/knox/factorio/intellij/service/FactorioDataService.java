@@ -27,9 +27,8 @@ public class FactorioDataService {
         this.project = project;
 
         Path pluginDir = FileUtil.getPluginDir();
-        Path luaLibRootPath = pluginDir.resolve("lualib");
-        Path corePrototypesRootPath = pluginDir.resolve("core_prototypes");
-        factorioDataParser = new FactorioDataParser(luaLibRootPath, corePrototypesRootPath);
+        Path factorioDataRootPath = pluginDir.resolve("factorio_data");
+        factorioDataParser = new FactorioDataParser(factorioDataRootPath);
     }
 
     public static FactorioDataService getInstance(Project project)
