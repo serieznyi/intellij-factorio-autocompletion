@@ -46,7 +46,7 @@ public class FactorioDataService {
         var path = factorioDataParser.getLuaLibPath(version);
 
         if (path == null && downloadInProgress.compareAndSet(false, true)) {
-            ProgressManager.getInstance().run(new LuaLibDownloadTask());
+            ProgressManager.getInstance().run(new FactorioDataTask());
         }
 
         return path;
@@ -59,10 +59,10 @@ public class FactorioDataService {
 
         FactorioVersion version = FactorioState.getInstance(project).selectedFactorioVersion;
 
-        var path = factorioDataParser.getPrototypePath(version);
+        var path = factorioDataParser.getCorePrototypePath(version);
 
         if (path == null && downloadInProgress.compareAndSet(false, true)) {
-            ProgressManager.getInstance().run(new LuaLibDownloadTask());
+            ProgressManager.getInstance().run(new FactorioDataTask());
         }
 
         return path;
@@ -73,7 +73,7 @@ public class FactorioDataService {
             return;
         }
 
-        factorioDataParser.removeLuaLibFiles();
+        factorioDataParser.removeLibraryFiles();
         PrototypesService.getInstance(project).reloadIndex();
     }
 
@@ -86,7 +86,7 @@ public class FactorioDataService {
             needUpdate = factorioDataParser.checkForUpdate(selectedVersion);
 
             if (needUpdate && downloadInProgress.compareAndSet(false, true)) {
-                ProgressManager.getInstance().run(new LuaLibDownloadTask());
+                ProgressManager.getInstance().run(new FactorioDataTask());
             }
         } catch (Throwable e) {
             LOG.error(e);
@@ -96,9 +96,9 @@ public class FactorioDataService {
         return needUpdate;
     }
 
-    private class LuaLibDownloadTask extends Task.Backgroundable {
-        public LuaLibDownloadTask() {
-            super(project, "Download Factorio Lualib", false);
+    private class FactorioDataTask extends Task.Backgroundable {
+        public FactorioDataTask() {
+            super(project, "Download Factorio Data", false);
         }
 
         @Override
