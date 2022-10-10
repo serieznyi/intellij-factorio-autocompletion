@@ -15,13 +15,12 @@ import java.util.zip.ZipInputStream;
 @CustomLog
 final public class FactorioDataParser {
     private static final String luaLibGithubTagsZipLink = "https://api.github.com/repos/wube/factorio-data/zipball";
-
     private final Path luaLibRootPath;
     private final Path corePrototypeRootPath;
 
-    public FactorioDataParser(Path luaLibRootPath, Path corePrototypeRootPath) {
-        this.luaLibRootPath = luaLibRootPath;
-        this.corePrototypeRootPath = corePrototypeRootPath;
+    public FactorioDataParser(Path rootPath) {
+        this.luaLibRootPath = rootPath.resolve("lualib");
+        this.corePrototypeRootPath = rootPath.resolve("core_prototypes");
     }
 
     public void removeLuaLibFiles() {

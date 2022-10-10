@@ -27,10 +27,9 @@ public class FactorioDataParserTest {
 
     @BeforeEach
     protected void setUp() {
-        Path luaLibRootPath = tempDir.resolve("lualib");
-        Path corePrototypesRootPath = tempDir.resolve("core_prototypes");
+        Path rootPath = tempDir.resolve("factorio_data");
 
-        factorioDataParser = new FactorioDataParser(luaLibRootPath, corePrototypesRootPath);
+        factorioDataParser = new FactorioDataParser(rootPath);
     }
 
     public static Set<FactorioApiVersion> providerVersions() throws IOException {
