@@ -31,14 +31,12 @@ public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
     @NotNull
     @Override
     public Collection<SyntheticLibrary> getAdditionalProjectLibraries(@NotNull Project project) {
-        // Do nothing, if integration is deactivated
         if (!FactorioState.getInstance(project).integrationActive) {
             return List.of();
         }
 
         String jarPath = PathUtil.getJarPathForClass(FactorioLibraryProvider.class);
 
-        // libDir for hardcoded things (builtin-types)
         VirtualFile libDir = null;
         try {
             libDir = VfsUtil.findFileByURL(URLUtil.getJarEntryURL(new File(jarPath), "library"));
@@ -53,26 +51,21 @@ public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
         Collection<SyntheticLibrary> libList = new ArrayList<>();
         libList.add(new FactorioLibrary(libDir, "Builtins"));
 
-        // libDir for downloaded factorio api
-        VirtualFile dynDir = null;
         Path apiPath = ApiService.getInstance(project).getApiPath();
         if (apiPath != null) {
             libList.add(createLibrary(apiPath.toString(), "API"));
         }
 
-        // protoDir for downloaded factorio prototypes
         Path downloadedProtoDir = PrototypeService.getInstance(project).getPrototypePath();
         if (downloadedProtoDir != null) {
             libList.add(createLibrary(downloadedProtoDir.toString(), "Prototype Classes"));
         }
 
-        // corePrototypes "core" dir
         Path libraryPath = FactorioDataService.getInstance(project).getLibraryPath();
         if (libraryPath != null) {
             libList.add(createLibrary(libraryPath.toString(), "Factorio Data"));
         }
 
-        // return all libDirs as array
         return libList;
     }
 
