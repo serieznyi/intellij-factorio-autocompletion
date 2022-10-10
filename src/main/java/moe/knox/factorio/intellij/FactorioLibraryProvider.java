@@ -62,6 +62,11 @@ public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
 
     private FactorioLibrary createLibrary(Path rootPath, String libraryName) {
         VirtualFile virtualRoot = VfsUtil.findFileByIoFile(rootPath.toFile(), true);
+
+        if (virtualRoot == null) {
+            throw new RuntimeException("Library root path is empty");
+        }
+
         for (VirtualFile child : virtualRoot.getChildren()) {
             child.putUserData(LuaFileUtil.INSTANCE.getPREDEFINED_KEY(), true);
         }
