@@ -1,4 +1,4 @@
-package moe.knox.factorio.core.parser.luaLib;
+package moe.knox.factorio.core.parser.factorioData;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;

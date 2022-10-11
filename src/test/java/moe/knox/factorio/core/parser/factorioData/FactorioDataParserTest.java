@@ -1,4 +1,4 @@
-package moe.knox.factorio.core.parser.luaLib;
+package moe.knox.factorio.core.parser.factorioData;
 
 import junit.framework.TestCase;
 import moe.knox.factorio.core.version.FactorioVersionResolver;
