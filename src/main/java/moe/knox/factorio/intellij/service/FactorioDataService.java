@@ -36,7 +36,7 @@ public class FactorioDataService {
         return new FactorioDataService(project);
     }
 
-    public Path getCurrentLuaLibPath() {
+    public Path getLuaLibPath() {
         if (downloadInProgress.get()) {
             return null;
         }
@@ -52,7 +52,7 @@ public class FactorioDataService {
         return path;
     }
 
-    public Path getCurrentCorePrototypePath() {
+    public Path getCorePrototypePath() {
         if (downloadInProgress.get()) {
             return null;
         }
@@ -60,6 +60,22 @@ public class FactorioDataService {
         FactorioVersion version = FactorioState.getInstance(project).selectedFactorioVersion;
 
         var path = factorioDataParser.getCorePrototypePath(version);
+
+        if (path == null && downloadInProgress.compareAndSet(false, true)) {
+            ProgressManager.getInstance().run(new FactorioDataTask());
+        }
+
+        return path;
+    }
+
+    public Path getBasePrototypePath() {
+        if (downloadInProgress.get()) {
+            return null;
+        }
+
+        FactorioVersion version = FactorioState.getInstance(project).selectedFactorioVersion;
+
+        var path = factorioDataParser.getBasePrototypePath(version);
 
         if (path == null && downloadInProgress.compareAndSet(false, true)) {
             ProgressManager.getInstance().run(new FactorioDataTask());

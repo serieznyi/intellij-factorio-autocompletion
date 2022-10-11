@@ -19,7 +19,7 @@ public class FactorioLualib extends FactorioFileResolver {
             return null;
         }
 
-        Path currentLuaLibPath = FactorioDataService.getInstance(project).getCurrentLuaLibPath();
+        Path currentLuaLibPath = FactorioDataService.getInstance(project).getLuaLibPath();
         if (currentLuaLibPath != null) {
             VirtualFile libraryFile = VfsUtil.findFileByIoFile(currentLuaLibPath.toFile(), true);
             return findFile(shortUrl, libraryFile, extNames);

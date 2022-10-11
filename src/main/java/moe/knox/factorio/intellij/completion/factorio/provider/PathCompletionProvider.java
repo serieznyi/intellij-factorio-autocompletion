@@ -28,7 +28,7 @@ public class PathCompletionProvider extends CompletionProvider<CompletionParamet
         iterateOverFiles(projectPath, position, resultSet);
 
         // Path to the root of the Factorio Lualib
-        Path currentLuaLibPath = FactorioDataService.getInstance(position.getProject()).getCurrentLuaLibPath();
+        Path currentLuaLibPath = FactorioDataService.getInstance(position.getProject()).getLuaLibPath();
         if (currentLuaLibPath != null) {
             iterateOverFiles(currentLuaLibPath.toString(), position, resultSet);
         }

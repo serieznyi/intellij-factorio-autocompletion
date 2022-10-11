@@ -29,7 +29,7 @@ final public class PrototypesService {
 
     // Create index for base and core Prototypes
     public void reloadIndex() {
-        Path currentPrototypePath = FactorioDataService.getInstance(project).getCurrentCorePrototypePath();
+        Path currentPrototypePath = FactorioDataService.getInstance(project).getCorePrototypePath();
         if (currentPrototypePath != null) {
             ReadAction.run(() -> {
                 PsiManager psiManager = PsiManager.getInstance(project);
