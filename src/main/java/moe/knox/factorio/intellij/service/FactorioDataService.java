@@ -13,6 +13,7 @@ import moe.knox.factorio.core.version.FactorioVersion;
 import moe.knox.factorio.intellij.FactorioState;
 import moe.knox.factorio.intellij.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,7 +37,7 @@ public class FactorioDataService {
         return new FactorioDataService(project);
     }
 
-    public Path getLuaLibPath() {
+    public @Nullable Path getLuaLibPath() {
         if (downloadInProgress.get()) {
             return null;
         }
@@ -52,7 +53,7 @@ public class FactorioDataService {
         return path;
     }
 
-    public Path getCorePrototypePath() {
+    public @Nullable Path getCorePrototypePath() {
         if (downloadInProgress.get()) {
             return null;
         }
@@ -68,14 +69,14 @@ public class FactorioDataService {
         return path;
     }
 
-    public Path getBasePrototypePath() {
+    public @Nullable Path getLibraryPath() {
         if (downloadInProgress.get()) {
             return null;
         }
 
         FactorioVersion version = FactorioState.getInstance(project).selectedFactorioVersion;
 
-        var path = factorioDataParser.getBasePrototypePath(version);
+        var path = factorioDataParser.getLibraryPath(version);
 
         if (path == null && downloadInProgress.compareAndSet(false, true)) {
             ProgressManager.getInstance().run(new FactorioDataTask());
@@ -110,10 +111,6 @@ public class FactorioDataService {
         }
 
         return needUpdate;
-    }
-
-    public boolean isLibraryDirsExists() {
-        return getBasePrototypePath() != null && getCorePrototypePath() != null && getLuaLibPath() != null;
     }
 
     private class FactorioDataTask extends Task.Backgroundable {

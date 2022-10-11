@@ -67,11 +67,9 @@ public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
         }
 
         // corePrototypes "core" dir
-        var factorioDataService = FactorioDataService.getInstance(project);
-        if (factorioDataService.isLibraryDirsExists()) {
-            libList.add(createLibrary(factorioDataService.getCorePrototypePath().toString(), "Core Prototypes"));
-            libList.add(createLibrary(factorioDataService.getBasePrototypePath().toString(), "Base Prototypes"));
-            libList.add(createLibrary(factorioDataService.getLuaLibPath().toString(), "LuaLib"));
+        Path libraryPath = FactorioDataService.getInstance(project).getLibraryPath();
+        if (libraryPath != null) {
+            libList.add(createLibrary(libraryPath.toString(), "Factorio Data"));
         }
 
         // return all libDirs as array

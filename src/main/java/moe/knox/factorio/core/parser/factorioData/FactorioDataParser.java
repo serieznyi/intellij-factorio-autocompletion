@@ -26,6 +26,12 @@ final public class FactorioDataParser {
         FileUtil.delete(rootPath.toFile());
     }
 
+    public @Nullable Path getLibraryPath(FactorioVersion version) {
+        Path versionPath = rootPath.resolve(version.version());
+
+        return Files.exists(versionPath) ? versionPath : null;
+    }
+
     public @Nullable Path getLuaLibPath(FactorioVersion version) {
         Path versionPath = getLuaLibPathInternal(version);
 
@@ -34,12 +40,6 @@ final public class FactorioDataParser {
 
     public @Nullable Path getCorePrototypePath(FactorioVersion version) {
         Path versionPath = getCorePrototypePathInternal(version);
-
-        return Files.exists(versionPath) ? versionPath : null;
-    }
-
-    public @Nullable Path getBasePrototypePath(FactorioVersion version) {
-        Path versionPath = getBasePrototypePathInternal(version);
 
         return Files.exists(versionPath) ? versionPath : null;
     }
@@ -117,9 +117,5 @@ final public class FactorioDataParser {
 
     public Path getCorePrototypePathInternal(FactorioVersion version) {
         return rootPath.resolve(version.version()).resolve("core/prototypes");
-    }
-
-    public Path getBasePrototypePathInternal(FactorioVersion version) {
-        return rootPath.resolve(version.version()).resolve("base/prototypes");
     }
 }
