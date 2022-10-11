@@ -105,7 +105,7 @@ public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
         libraries.add(new FactorioLibrary(libraryDirectory, "Builtins"));
     }
 
-    class FactorioLibrary extends SyntheticLibrary implements ItemPresentation {
+    private static class FactorioLibrary extends SyntheticLibrary implements ItemPresentation {
         VirtualFile root;
         String factorioApiVersion;
 
