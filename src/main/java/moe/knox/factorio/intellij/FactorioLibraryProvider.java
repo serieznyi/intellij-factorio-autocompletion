@@ -2,6 +2,7 @@ package moe.knox.factorio.intellij;
 
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ex.ProjectManagerEx;
 import com.intellij.openapi.roots.AdditionalLibraryRootsProvider;
@@ -28,6 +29,8 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
+    private static final Logger LOG = Logger.getInstance(FactorioLibraryProvider.class);
+
     @NotNull
     @Override
     public Collection<SyntheticLibrary> getAdditionalProjectLibraries(@NotNull Project project) {
@@ -35,38 +38,26 @@ public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
             return List.of();
         }
 
-        String jarPath = PathUtil.getJarPathForClass(FactorioLibraryProvider.class);
+        Collection<SyntheticLibrary> libraries = new ArrayList<>();
 
-        VirtualFile libDir = null;
-        try {
-            libDir = VfsUtil.findFileByURL(URLUtil.getJarEntryURL(new File(jarPath), "library"));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        for (VirtualFile libDirChild : libDir.getChildren()) {
-            libDirChild.putUserData(LuaFileUtil.INSTANCE.getPREDEFINED_KEY(), true);
-        }
-
-        Collection<SyntheticLibrary> libList = new ArrayList<>();
-        libList.add(new FactorioLibrary(libDir, "Builtins"));
+        registerBuiltins(libraries);
 
         Path apiPath = ApiService.getInstance(project).getApiPath();
         if (apiPath != null) {
-            libList.add(createLibrary(apiPath.toString(), "API"));
+            libraries.add(createLibrary(apiPath.toString(), "API"));
         }
 
         Path downloadedProtoDir = PrototypeService.getInstance(project).getPrototypePath();
         if (downloadedProtoDir != null) {
-            libList.add(createLibrary(downloadedProtoDir.toString(), "Prototype Classes"));
+            libraries.add(createLibrary(downloadedProtoDir.toString(), "Prototype Classes"));
         }
 
         Path libraryPath = FactorioDataService.getInstance(project).getLibraryPath();
         if (libraryPath != null) {
-            libList.add(createLibrary(libraryPath.toString(), "Factorio Data"));
+            libraries.add(createLibrary(libraryPath.toString(), "Factorio Data"));
         }
 
-        return libList;
+        return libraries;
     }
 
     private FactorioLibrary createLibrary(String downloadedDir, String libraryName) {
@@ -88,6 +79,30 @@ public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
 
             StubIndex.getInstance().forceRebuild(new Throwable("Factorio API changed"));
         });
+    }
+
+    private void registerBuiltins(Collection<SyntheticLibrary> libraries) {
+        VirtualFile libraryDirectory;
+        try {
+            String jarPath = PathUtil.getJarPathForClass(FactorioLibraryProvider.class);
+            libraryDirectory = VfsUtil.findFileByURL(URLUtil.getJarEntryURL(new File(jarPath), "library"));
+        } catch (MalformedURLException e) {
+            LOG.error(e);
+
+            return;
+        }
+
+        if (libraryDirectory == null) {
+            LOG.error("Builtins library is null");
+
+            return;
+        }
+
+        for (VirtualFile virtualFile : libraryDirectory.getChildren()) {
+            virtualFile.putUserData(LuaFileUtil.INSTANCE.getPREDEFINED_KEY(), true);
+        }
+
+        libraries.add(new FactorioLibrary(libraryDirectory, "Builtins"));
     }
 
     class FactorioLibrary extends SyntheticLibrary implements ItemPresentation {
