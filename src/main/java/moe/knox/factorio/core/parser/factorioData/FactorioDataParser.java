@@ -46,18 +46,19 @@ final public class FactorioDataParser {
 
     public void downloadAll(FactorioVersion version) throws IOException {
         try {
-            Path basePath = getBasePrototypePathInternal(version);
-            Path corePath = getCorePrototypePathInternal(version);
+            Path versionRoot = rootPath.resolve(version.version());
+            Path baseRoot = versionRoot.resolve("base");
+            Path coreRoot = versionRoot.resolve("core");
 
-            Files.createDirectories(basePath);
-            Files.createDirectories(corePath);
+            Files.createDirectories(baseRoot);
+            Files.createDirectories(coreRoot);
 
             URL url = new URL(luaLibGithubTagsZipLink + "/" + version.version());
             try (ZipInputStream zipInputStream = new ZipInputStream(url.openStream())) {
                 ZipEntry zipEntry;
                 while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                    saveZipEntry(zipInputStream, zipEntry, "/base/", basePath);
-                    saveZipEntry(zipInputStream, zipEntry, "/core/", corePath);
+                    saveZipEntry(zipInputStream, zipEntry, "/base/", baseRoot);
+                    saveZipEntry(zipInputStream, zipEntry, "/core/", coreRoot);
                 }
             }
         } catch (IOException e) {

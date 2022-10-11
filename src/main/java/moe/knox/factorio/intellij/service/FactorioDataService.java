@@ -112,6 +112,10 @@ public class FactorioDataService {
         return needUpdate;
     }
 
+    public boolean isLibraryDirsExists() {
+        return getBasePrototypePath() != null && getCorePrototypePath() != null && getLuaLibPath() != null;
+    }
+
     private class FactorioDataTask extends Task.Backgroundable {
         public FactorioDataTask() {
             super(project, "Download Factorio Data", false);

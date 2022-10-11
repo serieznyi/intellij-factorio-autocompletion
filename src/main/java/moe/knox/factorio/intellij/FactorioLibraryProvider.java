@@ -16,6 +16,7 @@ import com.intellij.util.io.URLUtil;
 import com.tang.intellij.lua.lang.LuaIcons;
 import com.tang.intellij.lua.psi.LuaFileUtil;
 import moe.knox.factorio.intellij.service.ApiService;
+import moe.knox.factorio.intellij.service.FactorioDataService;
 import moe.knox.factorio.intellij.service.PrototypeService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,27 +51,28 @@ public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
         }
 
         Collection<SyntheticLibrary> libList = new ArrayList<>();
-        libList.add(new FactorioLibrary(libDir, "Factorio Builtins"));
+        libList.add(new FactorioLibrary(libDir, "Builtins"));
 
         // libDir for downloaded factorio api
         VirtualFile dynDir = null;
         Path apiPath = ApiService.getInstance(project).getApiPath();
         if (apiPath != null) {
-            libList.add(createLibrary(apiPath.toString(), "Factorio API"));
+            libList.add(createLibrary(apiPath.toString(), "API"));
         }
 
         // protoDir for downloaded factorio prototypes
         Path downloadedProtoDir = PrototypeService.getInstance(project).getPrototypePath();
         if (downloadedProtoDir != null) {
-            libList.add(createLibrary(downloadedProtoDir.toString(), "Factorio Prototypes"));
+            libList.add(createLibrary(downloadedProtoDir.toString(), "Prototype Classes"));
         }
 
         // corePrototypes "core" dir
-//        String corePrototypesLink = FactorioLualibParser.getCurrentPrototypeLink(project);
-//        if (corePrototypesLink != null && !corePrototypesLink.isEmpty()) {
-//            libList.add(createLibrary(corePrototypesLink + "/core", "Core Prototypes"));
-//            libList.add(createLibrary(corePrototypesLink + "/base", "Base Prototypes"));
-//        }
+        var factorioDataService = FactorioDataService.getInstance(project);
+        if (factorioDataService.isLibraryDirsExists()) {
+            libList.add(createLibrary(factorioDataService.getCorePrototypePath().toString(), "Core Prototypes"));
+            libList.add(createLibrary(factorioDataService.getBasePrototypePath().toString(), "Base Prototypes"));
+            libList.add(createLibrary(factorioDataService.getLuaLibPath().toString(), "LuaLib"));
+        }
 
         // return all libDirs as array
         return libList;
