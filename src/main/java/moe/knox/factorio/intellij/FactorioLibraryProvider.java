@@ -44,30 +44,29 @@ public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
 
         Path apiPath = ApiService.getInstance(project).getApiPath();
         if (apiPath != null) {
-            libraries.add(createLibrary(apiPath.toString(), "API"));
+            libraries.add(createLibrary(apiPath, "API"));
         }
 
         Path downloadedProtoDir = PrototypeService.getInstance(project).getPrototypePath();
         if (downloadedProtoDir != null) {
-            libraries.add(createLibrary(downloadedProtoDir.toString(), "Prototype Classes"));
+            libraries.add(createLibrary(downloadedProtoDir, "Prototype Classes"));
         }
 
         Path libraryPath = FactorioDataService.getInstance(project).getLibraryPath();
         if (libraryPath != null) {
-            libraries.add(createLibrary(libraryPath.toString(), "Factorio Data"));
+            libraries.add(createLibrary(libraryPath, "Factorio Data"));
         }
 
         return libraries;
     }
 
-    private FactorioLibrary createLibrary(String downloadedDir, String libraryName) {
-        File downloadedProtoFile = new File(downloadedDir);
-        VirtualFile protoDir = VfsUtil.findFileByIoFile(downloadedProtoFile, true);
-        for (VirtualFile protoDirChild : protoDir.getChildren()) {
-            protoDirChild.putUserData(LuaFileUtil.INSTANCE.getPREDEFINED_KEY(), true);
+    private FactorioLibrary createLibrary(Path rootPath, String libraryName) {
+        VirtualFile virtualRoot = VfsUtil.findFileByIoFile(rootPath.toFile(), true);
+        for (VirtualFile child : virtualRoot.getChildren()) {
+            child.putUserData(LuaFileUtil.INSTANCE.getPREDEFINED_KEY(), true);
         }
 
-        return new FactorioLibrary(protoDir, libraryName);
+        return new FactorioLibrary(virtualRoot, libraryName);
     }
 
     public static void reload() {
