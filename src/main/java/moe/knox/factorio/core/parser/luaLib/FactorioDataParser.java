@@ -16,51 +16,54 @@ final public class FactorioDataParser {
     private static final Logger LOG = Logger.getInstance(FactorioDataParser.class);
     private static final String luaLibGithubTagsZipLink = "https://api.github.com/repos/wube/factorio-data/zipball";
 
-    private final Path luaLibRootPath;
-    private final Path corePrototypeRootPath;
+    private final Path rootPath;
 
     public FactorioDataParser(Path rootPath) {
-        this.luaLibRootPath = rootPath.resolve("lualib");
-        this.corePrototypeRootPath = rootPath.resolve("core_prototypes");
+        this.rootPath = rootPath;
     }
 
-    public void removeLuaLibFiles() {
-        FileUtil.delete(luaLibRootPath.toFile());
-        FileUtil.delete(corePrototypeRootPath.toFile());
+    public void removeLibraryFiles() {
+        FileUtil.delete(rootPath.toFile());
     }
 
     public @Nullable Path getLuaLibPath(FactorioVersion version) {
-        Path versionPath = luaLibRootPath.resolve(version.version());
+        Path versionPath = getLuaLibPathInternal(version);
 
         return Files.exists(versionPath) ? versionPath : null;
     }
 
-    public @Nullable Path getPrototypePath(FactorioVersion version) {
-        Path versionPath = corePrototypeRootPath.resolve(version.version());
+    public @Nullable Path getCorePrototypePath(FactorioVersion version) {
+        Path versionPath = getCorePrototypePathInternal(version);
+
+        return Files.exists(versionPath) ? versionPath : null;
+    }
+
+    public @Nullable Path getBasePrototypePath(FactorioVersion version) {
+        Path versionPath = getBasePrototypePathInternal(version);
 
         return Files.exists(versionPath) ? versionPath : null;
     }
 
     public void downloadAll(FactorioVersion version) throws IOException {
-        Path luaLibRootPathSubDir = luaLibRootPath.resolve(version.version());
-        Path corePrototypeSubDir = corePrototypeRootPath.resolve(version.version()).resolve("core");
-        Path basePrototypeSubDir = corePrototypeRootPath.resolve(version.version()).resolve("base");
+        try {
+            Path basePath = getBasePrototypePathInternal(version);
+            Path corePath = getCorePrototypePathInternal(version);
 
-        Files.createDirectories(luaLibRootPathSubDir);
-        Files.createDirectories(corePrototypeSubDir);
-        Files.createDirectories(basePrototypeSubDir);
+            Files.createDirectories(basePath);
+            Files.createDirectories(corePath);
 
-        URL url = new URL(luaLibGithubTagsZipLink + "/" + version.version());
+            URL url = new URL(luaLibGithubTagsZipLink + "/" + version.version());
+            try (ZipInputStream zipInputStream = new ZipInputStream(url.openStream())) {
+                ZipEntry zipEntry;
+                while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                    saveZipEntry(zipInputStream, zipEntry, "/base/", basePath);
+                    saveZipEntry(zipInputStream, zipEntry, "/core/", corePath);
+                }
+            }
+        } catch (IOException e) {
+            removeLibraryFiles();
 
-        InputStream inputStream = url.openStream();
-        ZipInputStream zipInputStream = new ZipInputStream(inputStream);
-
-        // Iterate over all files in the zip and only save the needed
-        ZipEntry zipEntry;
-        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-            saveZipEntry(zipInputStream, zipEntry, "/lualib/", luaLibRootPathSubDir);
-            saveZipEntry(zipInputStream, zipEntry, "/core/prototypes/", corePrototypeSubDir);
-            saveZipEntry(zipInputStream, zipEntry, "/base/prototypes/", basePrototypeSubDir);
+            throw e;
         }
     }
 
@@ -71,7 +74,6 @@ final public class FactorioDataParser {
             return;
         }
 
-        // This thing is inside core-prototype
         String filename = zipEntry.getName().substring(pos + inZipDir.length());
         if (filename.isEmpty()) {
             return;
@@ -81,19 +83,20 @@ final public class FactorioDataParser {
 
         if (zipEntry.isDirectory()) {
             Files.createDirectories(path);
-        } else {
-            // save file
-            byte[] buffer = new byte[2048];
-            try (FileOutputStream fos = new FileOutputStream(path.toFile());
-                 BufferedOutputStream bos = new BufferedOutputStream(fos, buffer.length)) {
+            return;
+        }
 
-                int len;
-                while ((len = zipInputStream.read(buffer)) > 0) {
-                    bos.write(buffer, 0, len);
-                }
-            } catch (IOException e) {
-                LOG.error(e);
+        // save file
+        byte[] buffer = new byte[2048];
+        try (FileOutputStream fos = new FileOutputStream(path.toFile());
+             BufferedOutputStream bos = new BufferedOutputStream(fos, buffer.length)) {
+
+            int len;
+            while ((len = zipInputStream.read(buffer)) > 0) {
+                bos.write(buffer, 0, len);
             }
+        } catch (IOException e) {
+            LOG.error(e);
         }
     }
 
@@ -104,9 +107,18 @@ final public class FactorioDataParser {
      * @return true when an update is available or the API not existent
      */
     public boolean checkForUpdate(FactorioVersion version) {
-        Path luaLibVersionPath = luaLibRootPath.resolve(version.version());
-        Path corePrototypeVersionPath = corePrototypeRootPath.resolve(version.version());
+        return !rootPath.resolve(version.version()).toFile().exists();
+    }
 
-        return !luaLibVersionPath.toFile().exists() || !corePrototypeVersionPath.toFile().exists();
+    public Path getLuaLibPathInternal(FactorioVersion version) {
+        return rootPath.resolve(version.version()).resolve("core/lualib");
+    }
+
+    public Path getCorePrototypePathInternal(FactorioVersion version) {
+        return rootPath.resolve(version.version()).resolve("core/prototypes");
+    }
+
+    public Path getBasePrototypePathInternal(FactorioVersion version) {
+        return rootPath.resolve(version.version()).resolve("base/prototypes");
     }
 }
