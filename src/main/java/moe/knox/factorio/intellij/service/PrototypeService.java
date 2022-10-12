@@ -6,6 +6,8 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import moe.knox.factorio.intellij.NotificationService;
 import moe.knox.factorio.core.PrototypesService;
 import moe.knox.factorio.core.parser.prototype.PrototypeParser;
@@ -14,8 +16,10 @@ import moe.knox.factorio.intellij.FactorioLibraryProvider;
 import moe.knox.factorio.intellij.FactorioState;
 import moe.knox.factorio.intellij.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -42,20 +46,21 @@ public class PrototypeService {
     /**
      * @return return path only if it not empty
      */
-    public Path getPrototypePath() {
+    public @Nullable VirtualFile getPrototypePath() {
         if (downloadInProgress.get()) {
             return null;
         }
 
         FactorioVersion version = FactorioState.getInstance(project).selectedFactorioVersion;
 
-        var path = prototypeParser.getPrototypePath(version);
+        var libraryPath = prototypeParser.getPrototypePath(version);
+        var libraryExists = Files.exists(libraryPath);
 
-        if (path == null && downloadInProgress.compareAndSet(false, true)) {
+        if (!libraryExists && downloadInProgress.compareAndSet(false, true)) {
             ProgressManager.getInstance().run(new PrototypeService.PrototypeTask());
         }
 
-        return path;
+        return libraryExists ? VfsUtil.findFileByIoFile(libraryPath.toFile(), false): null;
     }
 
     public void removeLibraryFiles() {

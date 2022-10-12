@@ -6,6 +6,8 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import moe.knox.factorio.intellij.NotificationService;
 import moe.knox.factorio.core.parser.api.ApiParser;
 import moe.knox.factorio.core.version.FactorioVersionCollection;
@@ -15,8 +17,10 @@ import moe.knox.factorio.intellij.FactorioLibraryProvider;
 import moe.knox.factorio.intellij.FactorioState;
 import moe.knox.factorio.intellij.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -66,20 +70,21 @@ public class ApiService {
         }
     }
 
-    public Path getApiPath() {
+    public @Nullable VirtualFile getApiPath() {
         if (downloadInProgress.get()) {
             return null;
         }
 
         FactorioVersion version = FactorioState.getInstance(project).selectedFactorioVersion;
 
-        var path = apiParser.getApiPath(version);
+        var libraryPath = apiParser.getApiPath(version);
+        var libraryExists = Files.exists(libraryPath);
 
-        if (path == null && downloadInProgress.compareAndSet(false, true)) {
+        if (!libraryExists && downloadInProgress.compareAndSet(false, true)) {
             ProgressManager.getInstance().run(new ApiTask());
         }
 
-        return path;
+        return libraryExists ? VfsUtil.findFileByIoFile(libraryPath.toFile(), false): null;
     }
 
     private FactorioVersion detectLatestAllowedVersion() {

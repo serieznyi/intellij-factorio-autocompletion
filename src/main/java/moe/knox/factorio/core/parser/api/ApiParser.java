@@ -4,7 +4,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import moe.knox.factorio.core.parser.api.writer.ApiFileWriter;
 import moe.knox.factorio.core.version.FactorioVersion;
 import moe.knox.factorio.core.parser.api.data.*;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -14,15 +14,13 @@ public class ApiParser {
     private final Path apiRootPath;
     private final RuntimeApiParser runtimeApiParser;
 
-    public ApiParser(Path apiRootPath) {
+    public ApiParser(@NotNull Path apiRootPath) {
         this.apiRootPath = apiRootPath;
         runtimeApiParser = new RuntimeApiParser();
     }
 
-    public @Nullable Path getApiPath(FactorioVersion version) {
-        Path versionPath = getVersionPath(version);
-
-        return Files.exists(versionPath) ? versionPath : null;
+    public @NotNull Path getApiPath(FactorioVersion version) {
+        return getVersionPath(version);
     }
 
     public void removeCurrentAPI() {

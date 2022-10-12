@@ -42,36 +42,30 @@ public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
 
         registerBuiltins(libraries);
 
-        Path apiPath = ApiService.getInstance(project).getApiPath();
-        if (apiPath != null) {
-            libraries.add(createLibrary(apiPath, "API"));
+        VirtualFile apiFile = ApiService.getInstance(project).getApiPath();
+        if (apiFile != null) {
+            libraries.add(createLibrary(apiFile, "API"));
         }
 
-        Path downloadedProtoDir = PrototypeService.getInstance(project).getPrototypePath();
-        if (downloadedProtoDir != null) {
-            libraries.add(createLibrary(downloadedProtoDir, "Prototype Classes"));
+        VirtualFile prototypeFile = PrototypeService.getInstance(project).getPrototypePath();
+        if (prototypeFile != null) {
+            libraries.add(createLibrary(prototypeFile, "Prototype Classes"));
         }
 
-        Path libraryPath = FactorioDataService.getInstance(project).getLibraryPath();
-        if (libraryPath != null) {
-            libraries.add(createLibrary(libraryPath, "Factorio Data"));
+        VirtualFile dataFile = FactorioDataService.getInstance(project).getLibraryPath();
+        if (dataFile != null) {
+            libraries.add(createLibrary(dataFile, "Factorio Data"));
         }
 
         return libraries;
     }
 
-    private FactorioLibrary createLibrary(Path rootPath, String libraryName) {
-        VirtualFile virtualRoot = VfsUtil.findFileByIoFile(rootPath.toFile(), true);
-
-        if (virtualRoot == null) {
-            throw new RuntimeException("Library root path is empty");
-        }
-
-        for (VirtualFile child : virtualRoot.getChildren()) {
+    private FactorioLibrary createLibrary(@NotNull VirtualFile libraryRoot, String libraryName) {
+        for (VirtualFile child : libraryRoot.getChildren()) {
             child.putUserData(LuaFileUtil.INSTANCE.getPREDEFINED_KEY(), true);
         }
 
-        return new FactorioLibrary(virtualRoot, libraryName);
+        return new FactorioLibrary(libraryRoot, libraryName);
     }
 
     public static void reload() {

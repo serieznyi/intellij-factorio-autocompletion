@@ -56,16 +56,13 @@ public class PrototypeParser {
 
     private final Path prototypesRootPath;
 
-    public PrototypeParser(Path prototypesRootPath) {
+    public PrototypeParser(@NotNull Path prototypesRootPath) {
 
         this.prototypesRootPath = prototypesRootPath;
     }
 
-    public @Nullable Path getPrototypePath(FactorioVersion version)
-    {
-        Path versionPath = prototypesRootPath.resolve(version.version());
-
-        return Files.exists(versionPath) ? versionPath : null;
+    public @NotNull Path getPrototypePath(FactorioVersion version) {
+        return prototypesRootPath.resolve(version.version());
     }
 
     public void removeFiles() {

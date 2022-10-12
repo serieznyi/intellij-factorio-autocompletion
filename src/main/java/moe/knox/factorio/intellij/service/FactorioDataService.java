@@ -6,6 +6,8 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import moe.knox.factorio.core.parser.factorioData.FactorioDataParser;
 import moe.knox.factorio.intellij.NotificationService;
 import moe.knox.factorio.core.PrototypesService;
@@ -15,6 +17,7 @@ import moe.knox.factorio.intellij.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -69,20 +72,21 @@ public class FactorioDataService {
         return path;
     }
 
-    public @Nullable Path getLibraryPath() {
+    public @Nullable VirtualFile getLibraryPath() {
         if (downloadInProgress.get()) {
             return null;
         }
 
         FactorioVersion version = FactorioState.getInstance(project).selectedFactorioVersion;
 
-        var path = factorioDataParser.getLibraryPath(version);
+        var libraryPath = factorioDataParser.getLibraryPath(version);
+        var libraryExists = Files.exists(libraryPath);
 
-        if (path == null && downloadInProgress.compareAndSet(false, true)) {
+        if (!libraryExists && downloadInProgress.compareAndSet(false, true)) {
             ProgressManager.getInstance().run(new FactorioDataTask());
         }
 
-        return path;
+        return libraryExists ? VfsUtil.findFileByIoFile(libraryPath.toFile(), false): null;
     }
 
     public void removeLibraryFiles() {

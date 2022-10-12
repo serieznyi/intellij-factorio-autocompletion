@@ -3,7 +3,7 @@ package moe.knox.factorio.core.parser.factorioData;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
 import moe.knox.factorio.core.version.FactorioVersion;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.URL;
@@ -18,7 +18,7 @@ final public class FactorioDataParser {
 
     private final Path rootPath;
 
-    public FactorioDataParser(Path rootPath) {
+    public FactorioDataParser(@NotNull Path rootPath) {
         this.rootPath = rootPath;
     }
 
@@ -26,22 +26,16 @@ final public class FactorioDataParser {
         FileUtil.delete(rootPath.toFile());
     }
 
-    public @Nullable Path getLibraryPath(FactorioVersion version) {
-        Path versionPath = rootPath.resolve(version.version());
-
-        return Files.exists(versionPath) ? versionPath : null;
+    public @NotNull Path getLibraryPath(FactorioVersion version) {
+        return rootPath.resolve(version.version());
     }
 
-    public @Nullable Path getLuaLibPath(FactorioVersion version) {
-        Path versionPath = getLuaLibPathInternal(version);
-
-        return Files.exists(versionPath) ? versionPath : null;
+    public @NotNull Path getLuaLibPath(FactorioVersion version) {
+        return rootPath.resolve(version.version()).resolve("core/lualib");
     }
 
-    public @Nullable Path getCorePrototypePath(FactorioVersion version) {
-        Path versionPath = getCorePrototypePathInternal(version);
-
-        return Files.exists(versionPath) ? versionPath : null;
+    public @NotNull Path getCorePrototypePath(FactorioVersion version) {
+        return rootPath.resolve(version.version()).resolve("core/prototypes");
     }
 
     public void downloadAll(FactorioVersion version) throws IOException {
@@ -109,13 +103,5 @@ final public class FactorioDataParser {
      */
     public boolean checkForUpdate(FactorioVersion version) {
         return !rootPath.resolve(version.version()).toFile().exists();
-    }
-
-    public Path getLuaLibPathInternal(FactorioVersion version) {
-        return rootPath.resolve(version.version()).resolve("core/lualib");
-    }
-
-    public Path getCorePrototypePathInternal(FactorioVersion version) {
-        return rootPath.resolve(version.version()).resolve("core/prototypes");
     }
 }
