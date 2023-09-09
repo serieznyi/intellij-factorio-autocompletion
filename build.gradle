@@ -67,6 +67,8 @@ intellij {
     ]
 }
 
+runPluginVerifier {}
+
 patchPluginXml {
     changeNotes = getPluginChangelog()
     sinceBuild = "231"
