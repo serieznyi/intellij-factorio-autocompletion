@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'moe.knox.factorio'
-version '1.4.0-PRERELEASE'
+version '1.4.0-IDEA231-eap-1'
 
 sourceCompatibility = JavaVersion.VERSION_17
 
