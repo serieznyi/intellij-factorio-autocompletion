@@ -17,6 +17,7 @@ jobs:
         with:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
+          cache: 'gradle'
       - name: Download Gradle wrapper and start gradle daemon
         run: ./gradlew wrapper
       - name: Compile project
@@ -40,6 +41,7 @@ jobs:
         with:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
+          cache: 'gradle'
       - name: Run JUnit
         run: ./gradlew test -x build
       - name: Archive JUnit result
@@ -66,6 +68,7 @@ jobs:
         with:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
+          cache: 'gradle'
       - name: Download Gradle wrapper and start gradle daemon
         run: ./gradlew wrapper
       - name: Run SonarQube analysis
