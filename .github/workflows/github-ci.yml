@@ -1,7 +1,7 @@
 name: Project CI
 on: [push]
 env:
-  JAVA_DISTRIBUTION: Monday
+  JAVA_DISTRIBUTION: temurin
   JAVA_VERSION: 17
 jobs:
   build:
