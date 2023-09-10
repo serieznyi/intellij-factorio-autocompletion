@@ -3,13 +3,7 @@ on: [push]
 env:
   JAVA_DISTRIBUTION: "temurin"
   JAVA_VERSION: "17"
-  ARTIFACT_FILES: |
-    src
-    gradle.properties
-    build.gradle
-    settings.gradle
-    build/classes/
-    gradlew
+  ARTIFACT_FILES: .
 jobs:
   build:
     name: Build
