@@ -65,6 +65,13 @@ jobs:
       - name: Download Gradle wrapper and start gradle daemon
         run: ./gradlew wrapper
       - name: Run SonarQube analysis
+        if: github.ref != 'refs/heads/master'
         run: ./gradlew sonarqube
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Run SonarQube analysis
+        if: github.ref == 'refs/heads/master'
+        run: ./gradlew sonarqube
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_SCANNER_OPTS: "-Dsonar: qualitygate.wait=true"
