@@ -5,6 +5,9 @@ env:
   JAVA_VERSION: "17"
   ARTIFACT_FILES: |
     src
+    gradle.properties
+    build.gradle
+    settings.gradle
 jobs:
   build:
     name: Build
@@ -18,7 +21,6 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'gradle'
-          check-latest: true
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Compile project
@@ -29,7 +31,7 @@ jobs:
           retention-days: 1
           path: ${{ env.ARTIFACT_FILES }}
   tests:
-    name: Run Junit tests
+    name: Run JUnit tests
     runs-on: ubuntu-latest
     needs:
       - build
@@ -44,7 +46,6 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'gradle'
-          check-latest: true
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run JUnit
@@ -75,7 +76,6 @@ jobs:
 #          distribution: ${{ env.JAVA_DISTRIBUTION }}
 #          java-version: ${{ env.JAVA_VERSION }}
 #          cache: 'gradle'
-#          check-latest: true
 #      - name: Setup Gradle
 #        uses: gradle/gradle-build-action@v2
 #      - name: Run SonarQube analysis
