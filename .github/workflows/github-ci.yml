@@ -8,6 +8,7 @@ env:
     gradle.properties
     build.gradle
     settings.gradle
+    gradlew
 jobs:
   build:
     name: Build
