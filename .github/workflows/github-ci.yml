@@ -9,6 +9,7 @@ env:
     build.gradle
     settings.gradle
     build/classes/
+    gradlew
 jobs:
   build:
     name: Build
@@ -25,7 +26,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Compile project
-        run: gradle testClasses
+        run: ./gradlew testClasses
       - uses: actions/upload-artifact@master
         with:
           name: source
@@ -50,7 +51,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run JUnit
-        run: gradle test
+        run: ./gradlew test
       - name: Archive JUnit result
         uses: actions/upload-artifact@v3
         with:
@@ -81,12 +82,12 @@ jobs:
 #        uses: gradle/gradle-build-action@v2
 #      - name: Run SonarQube analysis
 #        if: github.ref != 'refs/heads/master'
-#        run: gradle sonarqube
+#        run: ./gradlew sonarqube
 #        env:
 #          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 #      - name: Run SonarQube analysis
 #        if: github.ref == 'refs/heads/master'
-#        run: gradle sonarqube
+#        run: ./gradlew sonarqube
 #        env:
 #          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 #          SONAR_SCANNER_OPTS: "-Dsonar: qualitygate.wait=true"
