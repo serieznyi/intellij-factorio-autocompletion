@@ -44,6 +44,7 @@ jobs:
           cache: 'gradle'
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
+      - run: chmod +x ./gradlew
       - name: Run JUnit
         run: ./gradlew test
       - name: Archive JUnit result
