@@ -34,8 +34,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: "$JAVA_DISTRIBUTION"
-          java-version: "$JAVA_VERSION"
+          distribution: ${{ $JAVA_DISTRIBUTION }}
+          java-version: ${{ $JAVA_VERSION }}
       - name: Run JUnit
         run: ./gradlew test -x build
       - name: Archive JUnit result
