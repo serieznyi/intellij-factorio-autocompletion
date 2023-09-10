@@ -20,6 +20,8 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'gradle'
           check-latest: true
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
       - name: Compile project
         run: ./gradlew build -x test
       - uses: actions/upload-artifact@master
@@ -43,6 +45,8 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'gradle'
           check-latest: true
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
       - name: Run JUnit
         run: ./gradlew test -x build
       - name: Archive JUnit result
@@ -71,6 +75,8 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'gradle'
           check-latest: true
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
       - name: Run SonarQube analysis
         if: github.ref != 'refs/heads/master'
         run: ./gradlew sonarqube
