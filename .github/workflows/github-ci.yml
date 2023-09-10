@@ -6,6 +6,7 @@ env:
   ARTIFACT_FILES: |
     .
     !build/distributions
+    !example.gif
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,6 +19,7 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'gradle'
+          check-latest: true
       - name: Compile project
         run: ./gradlew build -x test
       - uses: actions/upload-artifact@master
@@ -40,6 +42,7 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'gradle'
+          check-latest: true
       - name: Run JUnit
         run: ./gradlew test -x build
       - name: Archive JUnit result
@@ -67,6 +70,7 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'gradle'
+          check-latest: true
       - name: Run SonarQube analysis
         if: github.ref != 'refs/heads/master'
         run: ./gradlew sonarqube
