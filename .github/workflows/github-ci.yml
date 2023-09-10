@@ -18,8 +18,6 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'gradle'
-      - name: Download Gradle wrapper and start gradle daemon
-        run: ./gradlew wrapper
       - name: Compile project
         run: ./gradlew build -x test
       - uses: actions/upload-artifact@master
@@ -69,8 +67,6 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
           cache: 'gradle'
-      - name: Download Gradle wrapper and start gradle daemon
-        run: ./gradlew wrapper
       - name: Run SonarQube analysis
         if: github.ref != 'refs/heads/master'
         run: ./gradlew sonarqube
