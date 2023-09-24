@@ -3,6 +3,7 @@ on: [push]
 env:
   JAVA_DISTRIBUTION: "temurin"
   JAVA_VERSION: "17"
+  GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
   ARTIFACT_FILES: |
     .
     !example.gif
