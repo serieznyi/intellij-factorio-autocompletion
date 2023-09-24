@@ -3,8 +3,9 @@ on: [push]
 env:
   JAVA_DISTRIBUTION: "temurin"
   JAVA_VERSION: "17"
-  ARTIFACT_FILES: .
-  !example.gif
+  ARTIFACT_FILES: |
+    .
+    !example.gif
 jobs:
   build:
     name: Build
