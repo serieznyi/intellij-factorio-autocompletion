@@ -23,8 +23,8 @@ jobs:
         with:
           gradle-version: wrapper
           cache-disabled: true
-#      - name: Compile project
-#        run: ./gradlew testClasses
+      - name: Compile project
+        run: ./gradlew testClasses
 #      - uses: actions/upload-artifact@master
 #        with:
 #          name: source
