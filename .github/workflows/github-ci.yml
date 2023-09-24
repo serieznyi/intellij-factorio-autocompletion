@@ -52,7 +52,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: wrapper
-#      - run: chmod +x ./gradlew
+      - run: chmod +x ./gradlew
       - name: Run JUnit
         run: ./gradlew test
       - name: Archive JUnit result
