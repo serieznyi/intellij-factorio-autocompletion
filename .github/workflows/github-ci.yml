@@ -24,11 +24,11 @@ jobs:
           gradle-version: wrapper
       - name: Compile project
         run: ./gradlew testClasses
-#      - uses: actions/upload-artifact@master
-#        with:
-#          name: source
-#          retention-days: 1
-#          path: ${{ env.ARTIFACT_FILES }}
+      - uses: actions/upload-artifact@master
+        with:
+          name: source
+          retention-days: 1
+          path: ${{ env.ARTIFACT_FILES }}
 #  tests:
 #    name: Run JUnit tests
 #    runs-on: ubuntu-latest
