@@ -22,6 +22,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: wrapper
+          cache-disabled: true
 #      - name: Compile project
 #        run: ./gradlew testClasses
 #      - uses: actions/upload-artifact@master
