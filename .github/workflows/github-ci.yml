@@ -49,6 +49,7 @@ jobs:
         run: ./gradlew sonarqube
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - run: git fetch origin master:master
       - name: Run SonarQube analysis
         if: github.ref == 'refs/heads/master'
         run: ./gradlew sonarqube
