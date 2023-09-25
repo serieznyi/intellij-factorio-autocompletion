@@ -104,9 +104,10 @@ final public class LuaLibDownloader {
 
         try {
             URL url = new URL(luaLibGithubTagsLink);
-            InputStreamReader inputStream = new InputStreamReader(url.openStream());
-            Gson gson = new Gson();
-            tags = gson.fromJson(inputStream, RefTag[].class);
+            try(InputStreamReader inputStream = new InputStreamReader(url.openStream())) {
+                Gson gson = new Gson();
+                tags = gson.fromJson(inputStream, RefTag[].class);
+            }
         } catch (Throwable e) {
             throw new GettingTagException(e);
         }
