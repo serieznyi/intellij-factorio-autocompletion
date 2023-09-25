@@ -44,7 +44,7 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - run: git fetch origin master:master
+      - run: git fetch --all
       - name: Run SonarQube analysis
         if: github.ref != 'refs/heads/master'
         run: ./gradlew sonarqube
