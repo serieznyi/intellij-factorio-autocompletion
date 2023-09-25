@@ -28,7 +28,6 @@ public class LuaLibDownloader extends Parser {
     public static final String luaLibRootPath = PathManager.getPluginsPath() + "/factorio_autocompletion/lualib/";
     public static final String prototypeRootPath = PathManager.getPluginsPath() + "/factorio_autocompletion/core_prototypes/";
     public static final String lualibGithubTagsLink = "https://api.github.com/repos/wube/factorio-data/git/refs/tags";
-    private static final Logger LOG = Logger.getInstance(Parser.class);
     private static final AtomicBoolean downloadInProgress = new AtomicBoolean(false);
 
     private final String saveDir;
