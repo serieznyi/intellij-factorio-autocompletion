@@ -1,11 +1,11 @@
 package moe.knox.factorio.intellij.library.service;
 
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import lombok.CustomLog;
 import moe.knox.factorio.core.GettingTagException;
 import moe.knox.factorio.core.LuaLibDownloader;
 import moe.knox.factorio.core.NotificationService;
@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@CustomLog
 public class LuaLibService {
-    private static final Logger LOG = Logger.getInstance(LuaLibService.class);
     private final LuaLibDownloader luaLibDownloader;
     private final Project project;
     private final AtomicBoolean downloadInProgress = new AtomicBoolean(false);
@@ -34,8 +34,7 @@ public class LuaLibService {
         luaLibDownloader = new LuaLibDownloader(luaLibRootPath, corePrototypesRootPath);
     }
 
-    public static LuaLibService getInstance(Project project)
-    {
+    public static LuaLibService getInstance(Project project) {
         return new LuaLibService(project);
     }
 
@@ -92,7 +91,7 @@ public class LuaLibService {
                 ProgressManager.getInstance().run(new LuaLibDownloadTask());
             }
         } catch (GettingTagException e) {
-            LOG.error(e);
+            log.error(e);
             NotificationService.getInstance(project).notifyErrorTagsDownloading();
         }
 
@@ -113,10 +112,10 @@ public class LuaLibService {
 
                 ApplicationManager.getApplication().invokeLater(() -> PrototypesService.getInstance(project).reloadIndex());
             } catch (GettingTagException e) {
-                LOG.error(e);
+                log.error(e);
                 NotificationService.getInstance(project).notifyErrorTagsDownloading();
             } catch (IOException e) {
-                LOG.error(e);
+                log.error(e);
                 NotificationService.getInstance(project).notifyErrorCreatingLuaLib();
             } finally {
                 downloadInProgress.set(false);
