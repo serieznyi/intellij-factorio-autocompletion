@@ -33,7 +33,7 @@ jobs:
       - name: Compile project
         run: ./gradlew testClasses
       - name: "Add Build Scan URL as PR comment"
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         if: github.event_name == 'pull_request' && failure()
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
