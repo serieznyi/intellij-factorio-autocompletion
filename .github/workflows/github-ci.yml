@@ -42,7 +42,8 @@ jobs:
             console.log({
               name: "Gradle Scan Result Link",
               head_sha: context.sha,
-              owner: context.repo.owner
+              owner: context.repo.owner,
+              repo: context.repo.name
             })
       - name: Upload build reports
         uses: actions/upload-artifact@v3
