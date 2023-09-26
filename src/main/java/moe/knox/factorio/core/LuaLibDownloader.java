@@ -180,7 +180,7 @@ public class LuaLibDownloader extends Task.Backgroundable {
         // download and extract zipball
         try {
             String tagName = tag.ref.substring(tag.ref.lastIndexOf("/") + 1);
-            url = new URL("https://api.github.com/repos/wube/factorio-data/zipball/" + tagName);
+            URL url = new URL("https://api.github.com/repos/wube/factorio-data/zipball/" + tagName);
             InputStream inputStream = url.openStream();
             try (ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
                 Path corePrototypeSubDir = Paths.get(prototypeSaveDir, "core");
