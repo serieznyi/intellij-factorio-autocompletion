@@ -39,7 +39,7 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            github.rest.checks.create({
+            console.log({
               name: "Gradle Scan Result Link",
               head_sha: context.sha,
               owner: context.repo.owner,
