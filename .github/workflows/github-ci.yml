@@ -34,6 +34,10 @@ jobs:
         id: gradle
         run: ./gradlew testClasses
       - run: "echo '${{ context.repo.owner }}'"
+      - run: "echo '${{ context.repo.repo }}'"
+      - run: "echo '${{ steps.gradle.outputs.build-scan-url }}'"
+      - run: "echo '${{ github.workflow }}'"
+      - run: "echo '${{ context.sha }}'"
       - name: "Add Build Scan URL as PR comment"
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request' && failure()
