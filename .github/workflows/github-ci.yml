@@ -38,7 +38,7 @@ jobs:
 #        if: github.event_name == 'pull_request' && failure()
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
-          script: console.log(context.repo.owner)
+          script: console.log(context.sha)
 #          script: |
 #            github.rest.checks.create({
 #              name: "Gradle Scan Result Link",
