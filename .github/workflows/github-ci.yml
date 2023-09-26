@@ -33,6 +33,7 @@ jobs:
       - name: Compile project
         id: gradle
         run: ./gradlew testClasses
+      - run: "echo '${{ context.repo.owner }}'"
       - name: "Add Build Scan URL as PR comment"
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request' && failure()
