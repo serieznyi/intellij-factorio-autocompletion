@@ -38,13 +38,13 @@ jobs:
 #        if: github.event_name == 'pull_request' && failure()
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
-          script: console.log(context)
+          script: console.log(context.repository.owner)
 #          script: |
 #            github.rest.checks.create({
 #              name: "Gradle Scan Result Link",
 #              head_sha: context.sha,
-#              owner: context.repo.owner,
-#              repo: context.repo.repo,
+#              owner: context.repository.owner,
+#              repo: context.repository.name,
 #              details_url: '${{ steps.gradle.outputs.build-scan-url }}'
 #              output.title: '❌ `${{ github.workflow }}` failed',
 #              output.summary: '❌ `${{ github.workflow }}` failed: ${{ steps.gradle.outputs.build-scan-url }}',
