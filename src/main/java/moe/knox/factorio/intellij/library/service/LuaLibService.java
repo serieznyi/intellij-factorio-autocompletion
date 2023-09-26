@@ -24,9 +24,11 @@ public class LuaLibService {
     private final LuaLibDownloader luaLibDownloader;
     private final Project project;
     private final AtomicBoolean downloadInProgress = new AtomicBoolean(false);
+    private final FactorioState factorioState;
 
     private LuaLibService(Project project) {
         this.project = project;
+        this.factorioState = FactorioState.getInstance(project);
 
         Path pluginDir = FilesystemUtil.getPluginDir();
         Path luaLibRootPath = pluginDir.resolve("lualib");
@@ -43,7 +45,7 @@ public class LuaLibService {
             return null;
         }
 
-        FactorioApiVersion version = FactorioState.getInstance(project).selectedFactorioVersion;
+        FactorioApiVersion version = this.factorioState.selectedFactorioVersion;
 
         var path = luaLibDownloader.getLuaLibPath(version);
 
@@ -59,7 +61,7 @@ public class LuaLibService {
             return null;
         }
 
-        FactorioApiVersion version = FactorioState.getInstance(project).selectedFactorioVersion;
+        FactorioApiVersion version = this.factorioState.selectedFactorioVersion;
 
         var path = luaLibDownloader.getPrototypePath(version);
 
@@ -83,7 +85,7 @@ public class LuaLibService {
         boolean needUpdate = false;
 
         try {
-            FactorioApiVersion selectedVersion = FactorioState.getInstance(project).selectedFactorioVersion;
+            FactorioApiVersion selectedVersion = this.factorioState.selectedFactorioVersion;
 
             needUpdate = luaLibDownloader.checkForUpdate(selectedVersion);
 
