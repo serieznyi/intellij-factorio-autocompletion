@@ -41,9 +41,9 @@ jobs:
           script: |
             github.rest.checks.create({
               name: "Gradle Scan Result Link",
-              head_sha: '${{ context.sha }}',
-              owner: '${{ context.repo.owner }}',
-              repo: '${{ context.repo.name }}',
+              head_sha: context.sha,
+              owner: context.repo.owner,
+              repo: context.repo.name,
               details_url: '${{ steps.gradle.outputs.build-scan-url }}',
               output.title: '❌ `${{ github.workflow }}` failed',
               output.summary: '❌ `${{ github.workflow }}` failed: ${{ steps.gradle.outputs.build-scan-url }}'
