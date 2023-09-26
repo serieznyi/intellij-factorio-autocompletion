@@ -84,6 +84,11 @@ patchPluginXml {
 test {
     useJUnitPlatform()
 
+    reports {
+        junitXml.outputLocation = layout.buildDirectory.dir('reports/junit/xml')
+        html.outputLocation = layout.buildDirectory.dir('reports/junit/html')
+    }
+
     finalizedBy jacocoTestReport
 
     systemProperty("junit.jupiter.execution.parallel.enabled", true)
