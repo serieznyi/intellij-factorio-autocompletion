@@ -43,7 +43,8 @@ jobs:
               name: "Gradle Scan Result Link",
               head_sha: context.sha,
               owner: context.repo.owner,
-              repo: context.repo.name
+              repo: context.repo.name,
+              details_url: '${{ steps.gradle.outputs.build-scan-url }}'
             })
       - name: Upload build reports
         uses: actions/upload-artifact@v3
