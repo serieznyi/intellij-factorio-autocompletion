@@ -40,6 +40,10 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             github.rest.checks.create({
+              name: "Gradle Scan Result Link",
+              head_sha: context.sha,
+              owner: context.repo.owner,
+              
             })
       - name: Upload build reports
         uses: actions/upload-artifact@v3
