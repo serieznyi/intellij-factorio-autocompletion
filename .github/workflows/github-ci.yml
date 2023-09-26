@@ -44,9 +44,11 @@ jobs:
               head_sha: context.sha,
               owner: context.repo.owner,
               repo: context.repo.name,
-              details_url: '1',
-              output.title: '2',
-              output.summary: '3'
+              details_url: '${{ steps.gradle.outputs.build-scan-url }}',
+              output: {
+                title: '❌ ${{ github.workflow }} failed',
+                summary: '❌ ${{ github.workflow }} failed: ${{ steps.gradle.outputs.build-scan-url }}'
+              }
             })
       - name: Upload build reports
         uses: actions/upload-artifact@v3
