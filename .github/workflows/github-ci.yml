@@ -28,6 +28,18 @@ jobs:
           gradle-version: wrapper
       - name: Compile project
         run: ./gradlew testClasses
+      - name: "Add Build Scan URL as PR comment"
+        uses: actions/github-script@v5
+        if: github.event_name == 'pull_request' && failure()
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ ${{ github.workflow }} failed: ${{ steps.gradle.outputs.build-scan-url }}'
+            })
       - name: Run JUnit
         run: ./gradlew test
       - name: Archive JUnit result
