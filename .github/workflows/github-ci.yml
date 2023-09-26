@@ -31,7 +31,7 @@ jobs:
         with:
           gradle-version: wrapper
       - name: Compile project
-        run: ./gradlew testClasses
+        run: ./gradlew build -x test
       - name: "Add Build Scan URL as PR comment"
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request' && failure()
