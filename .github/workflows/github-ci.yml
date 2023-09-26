@@ -33,23 +33,6 @@ jobs:
       - name: Compile project
         id: gradle
         run: ./gradlew testClasses
-      - name: "Add Build Scan URL as PR comment"
-        uses: actions/github-script@v6
-        if: github.event_name == 'pull_request' && failure()
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            github.rest.checks.create({
-              name: "Gradle Scan Result Link",
-              head_sha: context.sha,
-              owner: context.repo.owner,
-              repo: context.repo.name,
-              details_url: '${{ steps.gradle.outputs.build-scan-url }}',
-              output: {
-                title: '❌ ${{ github.workflow }} failed',
-                summary: '❌ ${{ github.workflow }} failed: ${{ steps.gradle.outputs.build-scan-url }}'
-              }
-            })
       - name: Upload build reports
         uses: actions/upload-artifact@v3
         with:
