@@ -7,15 +7,15 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ProcessingContext;
+import lombok.CustomLog;
 import moe.knox.factorio.intellij.library.service.PrototypeService;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.List;
 
+@CustomLog
 public class PrototypeTypeCompletionProvider extends CompletionProvider<CompletionParameters> {
-    private static final Logger LOG = Logger.getInstance(PrototypeTypeCompletionProvider.class);
-
     @Override
     protected void addCompletions(@NotNull CompletionParameters completionParameters, @NotNull ProcessingContext processingContext, @NotNull CompletionResultSet completionResultSet) {
         Project project = completionParameters.getEditor().getProject();
@@ -27,7 +27,7 @@ public class PrototypeTypeCompletionProvider extends CompletionProvider<Completi
                 completionResultSet.addElement(LookupElementBuilder.create(prototypeType));
             }
         } catch (IOException e) {
-            LOG.error(e);
+            log.error(e);
         }
     }
 }
