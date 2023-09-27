@@ -1,4 +1,4 @@
-import java./**/text.SimpleDateFormat
+import java.text.SimpleDateFormat
 
 plugins {
     id 'java'
