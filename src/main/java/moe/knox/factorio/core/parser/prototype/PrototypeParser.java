@@ -18,37 +18,34 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @CustomLog
 public class PrototypeParser {
     private final static String prototypesBaseLink = "https://wiki.factorio.com";
     private final static String NEW_LINE = System.lineSeparator();
-    private final static List<String> rootTypes = new ArrayList<>() {{
-        add("float");
-        add("double");
-        add("int");
-        add("int8");
-        add("int16");
-        add("int32");
-        add("int64");
-        add("uint");
-        add("uint8");
-        add("uint16");
-        add("uint32");
-        add("uint64");
-        add("string");
-        add("LocalisedString");
-        add("bool");
-    }};
-    private final static List<String> prototypeTypeWhitelist = new ArrayList<>() {{
-        add("Types/ItemProductPrototype");
-        add("Types/ItemToPlace");
-        add("Types/DamagePrototype");
-    }};
+    private final static List<String> rootTypes = Arrays.asList(
+        "float",
+        "double",
+        "int",
+        "int8",
+        "int16",
+        "int32",
+        "int64",
+        "uint",
+        "uint8",
+        "uint16",
+        "uint32",
+        "uint64",
+        "string",
+        "LocalisedString",
+        "bool"
+    );
+    private final static List<String> prototypeTypeWhitelist = Arrays.asList(
+        "Types/ItemProductPrototype",
+        "Types/ItemToPlace",
+        "Types/DamagePrototype"
+    );
 
     /**
      * map of all propertyTypes `typeName` > `link`
