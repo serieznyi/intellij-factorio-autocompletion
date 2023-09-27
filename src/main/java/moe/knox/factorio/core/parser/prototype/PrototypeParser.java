@@ -2,6 +2,7 @@ package moe.knox.factorio.core.parser.prototype;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
+import lombok.CustomLog;
 import moe.knox.factorio.core.version.FactorioApiVersion;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -22,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@CustomLog
 public class PrototypeParser {
-    private static final Logger LOG = Logger.getInstance(PrototypeParser.class);
     private final static String prototypesBaseLink = "https://wiki.factorio.com";
     private final static String NEW_LINE = System.lineSeparator();
     private final static List<String> rootTypes = new ArrayList<>() {{
@@ -61,8 +62,7 @@ public class PrototypeParser {
         this.prototypesRootPath = prototypesRootPath;
     }
 
-    public @Nullable Path getPrototypePath(FactorioApiVersion version)
-    {
+    public @Nullable Path getPrototypePath(FactorioApiVersion version) {
         Path versionPath = prototypesRootPath.resolve(version.version());
 
         return Files.exists(versionPath) ? versionPath : null;
@@ -155,8 +155,8 @@ public class PrototypeParser {
                     return true;
                 }
 
-                LOG.error("error downloading the single prototype page: %s".formatted(link));
-                LOG.error(e);
+                log.error("error downloading the single prototype page: %s".formatted(link));
+                log.error(e);
 
                 return false;
             }
@@ -364,7 +364,7 @@ public class PrototypeParser {
                 file.createNewFile();
                 com.google.common.io.Files.write(fileContent.getBytes(), file);
             } catch (IOException e) {
-                LOG.error(e);
+                log.error(e);
             }
         }
 
