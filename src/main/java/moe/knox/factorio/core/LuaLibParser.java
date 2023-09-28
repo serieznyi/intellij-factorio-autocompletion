@@ -14,7 +14,6 @@ import java.util.zip.ZipInputStream;
 
 @CustomLog
 final public class LuaLibParser {
-    private static final String luaLibGithubTagsLink = "https://api.github.com/repos/wube/factorio-data/git/refs/tags";
     private static final String luaLibGithubTagsZipLink = "https://api.github.com/repos/wube/factorio-data/zipball";
 
     private final Path luaLibRootPath;
@@ -42,7 +41,7 @@ final public class LuaLibParser {
         return Files.exists(versionPath) ? versionPath : null;
     }
 
-    public void downloadAll(FactorioApiVersion selectedVersion) throws IOException, GettingTagException {
+    public void downloadAll(FactorioApiVersion selectedVersion) throws IOException {
         Path luaLibRootPathSubDir = luaLibRootPath.resolve(selectedVersion.version());
         Path corePrototypeSubDir = corePrototypeRootPath.resolve(selectedVersion.version()).resolve("core");
         Path basePrototypeSubDir = corePrototypeRootPath.resolve(selectedVersion.version()).resolve("base");
@@ -100,7 +99,7 @@ final public class LuaLibParser {
      * When an update is available it will also remove the old one and start the download of the new one.
      * @return true when an update is available or the API not existent
      */
-    public boolean checkForUpdate(FactorioApiVersion selectedVersion) throws GettingTagException {
+    public boolean checkForUpdate(FactorioApiVersion selectedVersion) {
         Path luaLibVersionPath = luaLibRootPath.resolve(selectedVersion.version());
         Path corePrototypeVersionPath = corePrototypeRootPath.resolve(selectedVersion.version());
 
