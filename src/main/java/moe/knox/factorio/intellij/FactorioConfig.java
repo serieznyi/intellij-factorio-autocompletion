@@ -7,7 +7,7 @@ import com.intellij.openapi.util.NlsContexts;
 import moe.knox.factorio.intellij.service.ApiService;
 import moe.knox.factorio.core.version.ApiVersionResolver;
 import moe.knox.factorio.core.version.FactorioApiVersion;
-import moe.knox.factorio.intellij.service.LuaLibService;
+import moe.knox.factorio.intellij.service.FactorioDataService;
 import moe.knox.factorio.intellij.service.PrototypeService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -114,8 +114,8 @@ public class FactorioConfig implements SearchableConfigurable {
 
         if (isVersionChanged()) {
             ApiService.getInstance(project).removeLibraryFiles();
-            LuaLibService.getInstance(project).removeLibraryFiles();
-            LuaLibService.getInstance(project).checkForUpdate();
+            FactorioDataService.getInstance(project).removeLibraryFiles();
+            FactorioDataService.getInstance(project).checkForUpdate();
         }
 
         reloadButton.setEnabled(enableFactorioIntegrationCheckBox.isSelected());
@@ -130,13 +130,13 @@ public class FactorioConfig implements SearchableConfigurable {
     private void removeParsedLibraries() {
         ApiService.getInstance(project).removeLibraryFiles();
         PrototypeService.getInstance(project).removeLibraryFiles();
-        LuaLibService.getInstance(project).removeLibraryFiles();
+        FactorioDataService.getInstance(project).removeLibraryFiles();
     }
 
     private void updateLibraries() {
         ApiService.getInstance(project).checkForUpdate();
         PrototypeService.getInstance(project).checkForUpdate();
-        LuaLibService.getInstance(project).checkForUpdate();
+        FactorioDataService.getInstance(project).checkForUpdate();
     }
 
     private boolean isUseLatestVersion() {

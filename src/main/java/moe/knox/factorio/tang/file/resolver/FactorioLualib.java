@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import moe.knox.factorio.intellij.FactorioState;
-import moe.knox.factorio.intellij.service.LuaLibService;
+import moe.knox.factorio.intellij.service.FactorioDataService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +19,7 @@ public class FactorioLualib extends FactorioFileResolver {
             return null;
         }
 
-        Path currentLuaLibPath = LuaLibService.getInstance(project).getCurrentLuaLibPath();
+        Path currentLuaLibPath = FactorioDataService.getInstance(project).getCurrentLuaLibPath();
         if (currentLuaLibPath != null) {
             VirtualFile libraryFile = VfsUtil.findFileByIoFile(currentLuaLibPath.toFile(), true);
             return findFile(shortUrl, libraryFile, extNames);
