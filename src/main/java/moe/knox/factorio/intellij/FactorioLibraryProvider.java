@@ -67,10 +67,8 @@ public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
             log.error(e);
         }
 
-        // libDir for downloaded factorio api
-        VirtualFile dynDir = null;
-        Path apiPath = ApiService.getInstance(project).getApiPath();
-        if (apiPath != null) {
+        Optional<Path> apiPath = ApiService.getInstance(project).getApiPath();
+        if (apiPath.isPresent()) {
             libList.add(createLibrary(apiPath.toString(), "Factorio API"));
         }
 

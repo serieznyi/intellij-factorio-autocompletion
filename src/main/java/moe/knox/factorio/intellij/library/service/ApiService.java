@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ApiService {
@@ -66,16 +67,16 @@ public class ApiService {
         }
     }
 
-    public Path getApiPath() {
+    public Optional<Path> getApiPath() {
         if (downloadInProgress.get()) {
-            return null;
+            return Optional.empty();
         }
 
         FactorioApiVersion version = FactorioState.getInstance(project).selectedFactorioVersion;
 
-        var path = apiParser.getApiPath(version);
+        Optional<Path> path = apiParser.getApiPath(version);
 
-        if (path == null && downloadInProgress.compareAndSet(false, true)) {
+        if (path.isEmpty() && downloadInProgress.compareAndSet(false, true)) {
             ProgressManager.getInstance().run(new ApiTask());
         }
 

@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 public class ApiParser {
     private final Path apiRootPath;
@@ -19,10 +20,10 @@ public class ApiParser {
         runtimeApiParser = new RuntimeApiParser();
     }
 
-    public @Nullable Path getApiPath(FactorioApiVersion version) {
+    public Optional<Path> getApiPath(FactorioApiVersion version) {
         Path versionPath = getVersionPath(version);
 
-        return Files.exists(versionPath) ? versionPath : null;
+        return Files.exists(versionPath) ? Optional.of(versionPath) : Optional.empty();
     }
 
     public void removeCurrentAPI() {
