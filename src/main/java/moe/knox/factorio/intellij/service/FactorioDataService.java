@@ -48,7 +48,7 @@ public class FactorioDataService {
         var path = factorioDataParser.getLuaLibPath(version);
 
         if (path == null && downloadInProgress.compareAndSet(false, true)) {
-            ProgressManager.getInstance().run(new LuaLibDownloadTask());
+            ProgressManager.getInstance().run(new FactorioDataTask());
         }
 
         return path;
@@ -64,7 +64,7 @@ public class FactorioDataService {
         var path = factorioDataParser.getPrototypePath(version);
 
         if (path == null && downloadInProgress.compareAndSet(false, true)) {
-            ProgressManager.getInstance().run(new LuaLibDownloadTask());
+            ProgressManager.getInstance().run(new FactorioDataTask());
         }
 
         return path;
@@ -88,7 +88,7 @@ public class FactorioDataService {
             needUpdate = factorioDataParser.checkForUpdate(selectedVersion);
 
             if (needUpdate && downloadInProgress.compareAndSet(false, true)) {
-                ProgressManager.getInstance().run(new LuaLibDownloadTask());
+                ProgressManager.getInstance().run(new FactorioDataTask());
             }
         } catch (Throwable e) {
             log.error(e);
@@ -98,8 +98,8 @@ public class FactorioDataService {
         return needUpdate;
     }
 
-    private class LuaLibDownloadTask extends Task.Backgroundable {
-        public LuaLibDownloadTask() {
+    private class FactorioDataTask extends Task.Backgroundable {
+        public FactorioDataTask() {
             super(project, "Download Factorio Lualib", false);
         }
 
