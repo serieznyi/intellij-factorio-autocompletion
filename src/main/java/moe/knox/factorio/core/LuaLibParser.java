@@ -14,7 +14,6 @@ import java.util.zip.ZipInputStream;
 
 @CustomLog
 final public class LuaLibParser {
-    private static final String luaLibGithubTagsLink = "https://api.github.com/repos/wube/factorio-data/git/refs/tags";
     private static final String luaLibGithubTagsZipLink = "https://api.github.com/repos/wube/factorio-data/zipball";
 
     private final Path luaLibRootPath;
