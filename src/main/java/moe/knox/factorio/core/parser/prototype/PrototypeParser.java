@@ -1,6 +1,5 @@
 package moe.knox.factorio.core.parser.prototype;
 
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
 import lombok.CustomLog;
 import moe.knox.factorio.core.version.FactorioApiVersion;
