@@ -15,9 +15,11 @@ import moe.knox.factorio.intellij.FactorioState;
 import moe.knox.factorio.intellij.util.FilesystemUtil;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PrototypeService {
@@ -43,9 +45,9 @@ public class PrototypeService {
     /**
      * @return return path only if it not empty
      */
-    public Path getPrototypePath() {
+    public Optional<Path> getPrototypePath() {
         if (downloadInProgress.get()) {
-            return null;
+            return Optional.empty();
         }
 
         FactorioApiVersion version = FactorioState.getInstance(project).selectedFactorioVersion;
@@ -56,7 +58,7 @@ public class PrototypeService {
             ProgressManager.getInstance().run(new PrototypeService.PrototypeTask());
         }
 
-        return path;
+        return Optional.ofNullable(path);
     }
 
     public void removeCurrentPrototypes() {

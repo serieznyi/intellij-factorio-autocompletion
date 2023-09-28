@@ -26,6 +26,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.*;
 import java.nio.file.Path;
+import java.util.function.Consumer;
 
 @CustomLog
 public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
@@ -74,10 +75,8 @@ public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
         }
 
         // protoDir for downloaded factorio prototypes
-        Path downloadedProtoDir = PrototypeService.getInstance(project).getPrototypePath();
-        if (downloadedProtoDir != null) {
-            libList.add(createLibrary(downloadedProtoDir.toString(), "Factorio Prototypes"));
-        }
+        Optional<Path> downloadedProtoDir = PrototypeService.getInstance(project).getPrototypePath();
+        downloadedProtoDir.ifPresent(t -> libList.add(createLibrary(t.toString(), "Factorio Prototypes")));
 
         // corePrototypes "core" dir
 //        String corePrototypesLink = FactorioLualibParser.getCurrentPrototypeLink(project);
