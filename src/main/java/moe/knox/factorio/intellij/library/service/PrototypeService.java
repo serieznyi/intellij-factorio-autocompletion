@@ -55,7 +55,7 @@ public class PrototypeService {
 
         var path = prototypeParser.getPrototypePath(version);
 
-        if (path.isPresent() && downloadInProgress.compareAndSet(false, true)) {
+        if (path.isEmpty() && downloadInProgress.compareAndSet(false, true)) {
             ProgressManager.getInstance().run(new PrototypeService.PrototypeTask());
         }
 
