@@ -55,11 +55,11 @@ public class PrototypeService {
 
         var path = prototypeParser.getPrototypePath(version);
 
-        if (path == null && downloadInProgress.compareAndSet(false, true)) {
+        if (path.isPresent() && downloadInProgress.compareAndSet(false, true)) {
             ProgressManager.getInstance().run(new PrototypeService.PrototypeTask());
         }
 
-        return Optional.ofNullable(path);
+        return path;
     }
 
     public void removeCurrentPrototypes() {
@@ -76,7 +76,7 @@ public class PrototypeService {
 
         var path = prototypeParser.getPrototypePath(selectedVersion);
 
-        if (path == null) {
+        if (path.isEmpty()) {
             ProgressManager.getInstance().run(new PrototypeService.PrototypeTask());
         }
     }

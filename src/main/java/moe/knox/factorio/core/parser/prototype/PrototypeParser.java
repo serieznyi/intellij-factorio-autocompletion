@@ -59,10 +59,10 @@ public class PrototypeParser {
         this.prototypesRootPath = prototypesRootPath;
     }
 
-    public @Nullable Path getPrototypePath(FactorioApiVersion version) {
+    public Optional<Path> getPrototypePath(FactorioApiVersion version) {
         Path versionPath = prototypesRootPath.resolve(version.version());
 
-        return Files.exists(versionPath) ? versionPath : null;
+        return Files.exists(versionPath) ? Optional.of(versionPath) : Optional.empty();
     }
 
     public void removeFiles() {
