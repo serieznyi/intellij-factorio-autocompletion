@@ -41,7 +41,7 @@ final public class LuaLibParser {
         return Files.exists(versionPath) ? versionPath : null;
     }
 
-    public void downloadAll(FactorioApiVersion selectedVersion) throws IOException, GettingTagException {
+    public void downloadAll(FactorioApiVersion selectedVersion) throws IOException {
         Path luaLibRootPathSubDir = luaLibRootPath.resolve(selectedVersion.version());
         Path corePrototypeSubDir = corePrototypeRootPath.resolve(selectedVersion.version()).resolve("core");
         Path basePrototypeSubDir = corePrototypeRootPath.resolve(selectedVersion.version()).resolve("base");
@@ -99,7 +99,7 @@ final public class LuaLibParser {
      * When an update is available it will also remove the old one and start the download of the new one.
      * @return true when an update is available or the API not existent
      */
-    public boolean checkForUpdate(FactorioApiVersion selectedVersion) throws GettingTagException {
+    public boolean checkForUpdate(FactorioApiVersion selectedVersion) {
         Path luaLibVersionPath = luaLibRootPath.resolve(selectedVersion.version());
         Path corePrototypeVersionPath = corePrototypeRootPath.resolve(selectedVersion.version());
 

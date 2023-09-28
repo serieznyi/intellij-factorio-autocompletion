@@ -38,7 +38,7 @@ public class LuaLibParserTest {
 
     @ParameterizedTest
     @MethodSource("providerVersions")
-    void downloadAll(FactorioApiVersion version) throws GettingTagException, IOException {
+    void downloadAll(FactorioApiVersion version) throws IOException {
         luaLibParser.downloadAll(version);
     }
 }
