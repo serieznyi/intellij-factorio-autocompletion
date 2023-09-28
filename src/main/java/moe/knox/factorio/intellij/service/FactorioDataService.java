@@ -18,13 +18,13 @@ import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @CustomLog
-public class LuaLibService {
+public class FactorioDataService {
     private final FactorioDataParser factorioDataParser;
     private final Project project;
     private final AtomicBoolean downloadInProgress = new AtomicBoolean(false);
     private final FactorioState factorioState;
 
-    private LuaLibService(Project project) {
+    private FactorioDataService(Project project) {
         this.project = project;
         this.factorioState = FactorioState.getInstance(project);
 
@@ -34,8 +34,8 @@ public class LuaLibService {
         factorioDataParser = new FactorioDataParser(luaLibRootPath, corePrototypesRootPath);
     }
 
-    public static LuaLibService getInstance(Project project) {
-        return new LuaLibService(project);
+    public static FactorioDataService getInstance(Project project) {
+        return new FactorioDataService(project);
     }
 
     public Path getCurrentLuaLibPath() {

@@ -10,7 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
 import com.tang.intellij.lua.lang.type.LuaString;
-import moe.knox.factorio.intellij.service.LuaLibService;
+import moe.knox.factorio.intellij.service.FactorioDataService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.SystemIndependent;
 
@@ -28,7 +28,7 @@ public class PathCompletionProvider extends CompletionProvider<CompletionParamet
         iterateOverFiles(projectPath, position, resultSet);
 
         // Path to the root of the Factorio Lualib
-        Path currentLuaLibPath = LuaLibService.getInstance(position.getProject()).getCurrentLuaLibPath();
+        Path currentLuaLibPath = FactorioDataService.getInstance(position.getProject()).getCurrentLuaLibPath();
         if (currentLuaLibPath != null) {
             iterateOverFiles(currentLuaLibPath.toString(), position, resultSet);
         }
