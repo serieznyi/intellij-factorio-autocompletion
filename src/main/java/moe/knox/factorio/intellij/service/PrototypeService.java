@@ -96,9 +96,9 @@ public class PrototypeService {
                 prototypeParser.parse(selectedVersion);
 
                 ApplicationManager.getApplication().invokeLater(FactorioLibraryProvider::reload);
-            } catch (IOException e) {
+            } catch (Throwable e) {
                 log.error(e);
-                NotificationService.getInstance(project).notifyErrorDownloadingPrototypeDefinitions();
+                NotificationService.getInstance(project).notifyErrorPrototypeUpdating();
             } finally {
                 downloadInProgress.set(false);
             }

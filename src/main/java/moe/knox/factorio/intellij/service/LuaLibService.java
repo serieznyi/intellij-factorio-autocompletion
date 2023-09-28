@@ -113,7 +113,7 @@ public class LuaLibService {
                 ApplicationManager.getApplication().invokeLater(() -> PrototypesService.getInstance(project).reloadIndex());
             } catch (Throwable e) {
                 log.error(e);
-                NotificationService.getInstance(project).notifyErrorCreatingLuaLib();
+                NotificationService.getInstance(project).notifyErrorLuaLibUpdating();
             } finally {
                 downloadInProgress.set(false);
             }
