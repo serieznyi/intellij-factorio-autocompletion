@@ -6,6 +6,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import lombok.CustomLog;
 import moe.knox.factorio.core.NotificationService;
 import moe.knox.factorio.core.parser.api.ApiParser;
 import moe.knox.factorio.core.version.ApiVersionCollection;
@@ -21,8 +22,8 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@CustomLog
 public class ApiService {
-    private static final Logger LOG = Logger.getInstance(ApiService.class);
     private final AtomicBoolean downloadInProgress = new AtomicBoolean(false);
     private final Project project;
     private final ApiParser apiParser;
@@ -110,7 +111,7 @@ public class ApiService {
 
                 ApplicationManager.getApplication().invokeLater(FactorioLibraryProvider::reload);
             } catch (IOException e) {
-                LOG.error(e);
+                log.error(e);
                 NotificationService.getInstance(project).notifyErrorCreatingApiDirs();
             } finally {
                 downloadInProgress.set(false);
