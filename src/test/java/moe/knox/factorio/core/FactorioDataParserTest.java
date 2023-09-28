@@ -13,10 +13,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Set;
 
-public class LuaLibParserTest {
+public class FactorioDataParserTest {
     private static Path tempDir;
 
-    private LuaLibParser luaLibParser;
+    private FactorioDataParser factorioDataParser;
 
     @BeforeAll
     protected static void setUpAll(@TempDir(cleanup = CleanupMode.NEVER) Path tempDirArg)
@@ -29,7 +29,7 @@ public class LuaLibParserTest {
         Path luaLibRootPath = tempDir.resolve("lualib");
         Path corePrototypesRootPath = tempDir.resolve("core_prototypes");
 
-        luaLibParser = new LuaLibParser(luaLibRootPath, corePrototypesRootPath);
+        factorioDataParser = new FactorioDataParser(luaLibRootPath, corePrototypesRootPath);
     }
 
     public static Set<FactorioApiVersion> providerVersions() throws IOException {
@@ -39,6 +39,6 @@ public class LuaLibParserTest {
     @ParameterizedTest
     @MethodSource("providerVersions")
     void downloadAll(FactorioApiVersion version) throws IOException {
-        luaLibParser.downloadAll(version);
+        factorioDataParser.downloadAll(version);
     }
 }

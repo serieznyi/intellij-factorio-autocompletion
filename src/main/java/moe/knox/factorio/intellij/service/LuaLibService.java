@@ -6,7 +6,7 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import lombok.CustomLog;
-import moe.knox.factorio.core.LuaLibParser;
+import moe.knox.factorio.core.FactorioDataParser;
 import moe.knox.factorio.intellij.NotificationService;
 import moe.knox.factorio.core.PrototypesService;
 import moe.knox.factorio.core.version.FactorioApiVersion;
@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @CustomLog
 public class LuaLibService {
-    private final LuaLibParser luaLibParser;
+    private final FactorioDataParser factorioDataParser;
     private final Project project;
     private final AtomicBoolean downloadInProgress = new AtomicBoolean(false);
     private final FactorioState factorioState;
@@ -31,7 +31,7 @@ public class LuaLibService {
         Path pluginDir = FilesystemUtil.getPluginDir();
         Path luaLibRootPath = pluginDir.resolve("lualib");
         Path corePrototypesRootPath = pluginDir.resolve("core_prototypes");
-        luaLibParser = new LuaLibParser(luaLibRootPath, corePrototypesRootPath);
+        factorioDataParser = new FactorioDataParser(luaLibRootPath, corePrototypesRootPath);
     }
 
     public static LuaLibService getInstance(Project project) {
@@ -45,7 +45,7 @@ public class LuaLibService {
 
         FactorioApiVersion version = this.factorioState.selectedFactorioVersion;
 
-        var path = luaLibParser.getLuaLibPath(version);
+        var path = factorioDataParser.getLuaLibPath(version);
 
         if (path == null && downloadInProgress.compareAndSet(false, true)) {
             ProgressManager.getInstance().run(new LuaLibDownloadTask());
@@ -61,7 +61,7 @@ public class LuaLibService {
 
         FactorioApiVersion version = this.factorioState.selectedFactorioVersion;
 
-        var path = luaLibParser.getPrototypePath(version);
+        var path = factorioDataParser.getPrototypePath(version);
 
         if (path == null && downloadInProgress.compareAndSet(false, true)) {
             ProgressManager.getInstance().run(new LuaLibDownloadTask());
@@ -75,7 +75,7 @@ public class LuaLibService {
             return;
         }
 
-        luaLibParser.removeLuaLibFiles();
+        factorioDataParser.removeLuaLibFiles();
         PrototypesService.getInstance(project).reloadIndex();
     }
 
@@ -85,7 +85,7 @@ public class LuaLibService {
         try {
             FactorioApiVersion selectedVersion = this.factorioState.selectedFactorioVersion;
 
-            needUpdate = luaLibParser.checkForUpdate(selectedVersion);
+            needUpdate = factorioDataParser.checkForUpdate(selectedVersion);
 
             if (needUpdate && downloadInProgress.compareAndSet(false, true)) {
                 ProgressManager.getInstance().run(new LuaLibDownloadTask());
@@ -108,7 +108,7 @@ public class LuaLibService {
             try {
                 FactorioApiVersion selectedVersion = FactorioState.getInstance(project).selectedFactorioVersion;
 
-                luaLibParser.downloadAll(selectedVersion);
+                factorioDataParser.downloadAll(selectedVersion);
 
                 ApplicationManager.getApplication().invokeLater(() -> PrototypesService.getInstance(project).reloadIndex());
             } catch (Throwable e) {
