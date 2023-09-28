@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project;
 import lombok.CustomLog;
 import moe.knox.factorio.core.GettingTagException;
 import moe.knox.factorio.core.LuaLibParser;
-import moe.knox.factorio.core.NotificationService;
+import moe.knox.factorio.intellij.NotificationService;
 import moe.knox.factorio.core.PrototypesService;
 import moe.knox.factorio.core.version.FactorioApiVersion;
 import moe.knox.factorio.intellij.FactorioState;
