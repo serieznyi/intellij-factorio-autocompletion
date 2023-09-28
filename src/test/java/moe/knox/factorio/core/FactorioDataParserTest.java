@@ -1,5 +1,6 @@
 package moe.knox.factorio.core;
 
+import moe.knox.factorio.core.parser.data.FactorioDataParser;
 import moe.knox.factorio.core.version.ApiVersionResolver;
 import moe.knox.factorio.core.version.FactorioApiVersion;
 import org.junit.jupiter.api.BeforeAll;

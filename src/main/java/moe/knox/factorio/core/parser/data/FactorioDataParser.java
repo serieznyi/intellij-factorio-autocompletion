@@ -1,4 +1,4 @@
-package moe.knox.factorio.core;
+package moe.knox.factorio.core.parser.data;
 
 import com.intellij.openapi.util.io.FileUtil;
 import lombok.CustomLog;
