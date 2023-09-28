@@ -2,7 +2,6 @@ package moe.knox.factorio.intellij;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
-import moe.knox.factorio.core.LuaLibDownloader;
 import moe.knox.factorio.core.PrototypesService;
 import moe.knox.factorio.intellij.library.service.ApiService;
 import moe.knox.factorio.intellij.library.service.LuaLibService;

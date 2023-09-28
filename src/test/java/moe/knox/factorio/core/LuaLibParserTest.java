@@ -1,6 +1,5 @@
 package moe.knox.factorio.core;
 
-import junit.framework.TestCase;
 import moe.knox.factorio.core.version.ApiVersionResolver;
 import moe.knox.factorio.core.version.FactorioApiVersion;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,12 +13,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-public class LuaLibDownloaderTest {
+public class LuaLibParserTest {
     private static Path tempDir;
 
-    private LuaLibDownloader luaLibDownloader;
+    private LuaLibParser luaLibParser;
 
     @BeforeAll
     protected static void setUpAll(@TempDir(cleanup = CleanupMode.NEVER) Path tempDirArg)
@@ -32,7 +29,7 @@ public class LuaLibDownloaderTest {
         Path luaLibRootPath = tempDir.resolve("lualib");
         Path corePrototypesRootPath = tempDir.resolve("core_prototypes");
 
-        luaLibDownloader = new LuaLibDownloader(luaLibRootPath, corePrototypesRootPath);
+        luaLibParser = new LuaLibParser(luaLibRootPath, corePrototypesRootPath);
     }
 
     public static Set<FactorioApiVersion> providerVersions() throws IOException {
@@ -42,6 +39,6 @@ public class LuaLibDownloaderTest {
     @ParameterizedTest
     @MethodSource("providerVersions")
     void downloadAll(FactorioApiVersion version) throws GettingTagException, IOException {
-        luaLibDownloader.downloadAll(version);
+        luaLibParser.downloadAll(version);
     }
 }
