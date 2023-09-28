@@ -1,13 +1,12 @@
-package moe.knox.factorio.intellij.library.service;
+package moe.knox.factorio.intellij.service;
 
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import lombok.CustomLog;
-import moe.knox.factorio.core.NotificationService;
+import moe.knox.factorio.intellij.NotificationService;
 import moe.knox.factorio.core.parser.api.ApiParser;
 import moe.knox.factorio.core.version.ApiVersionCollection;
 import moe.knox.factorio.core.version.ApiVersionResolver;

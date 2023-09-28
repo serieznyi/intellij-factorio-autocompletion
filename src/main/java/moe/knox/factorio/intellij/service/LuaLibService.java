@@ -1,4 +1,4 @@
-package moe.knox.factorio.intellij.library.service;
+package moe.knox.factorio.intellij.service;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -7,8 +7,8 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import lombok.CustomLog;
 import moe.knox.factorio.core.GettingTagException;
-import moe.knox.factorio.core.LuaLibDownloader;
-import moe.knox.factorio.core.NotificationService;
+import moe.knox.factorio.core.LuaLibParser;
+import moe.knox.factorio.intellij.NotificationService;
 import moe.knox.factorio.core.PrototypesService;
 import moe.knox.factorio.core.version.FactorioApiVersion;
 import moe.knox.factorio.intellij.FactorioState;
@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @CustomLog
 public class LuaLibService {
-    private final LuaLibDownloader luaLibDownloader;
+    private final LuaLibParser luaLibParser;
     private final Project project;
     private final AtomicBoolean downloadInProgress = new AtomicBoolean(false);
     private final FactorioState factorioState;
@@ -33,7 +33,7 @@ public class LuaLibService {
         Path pluginDir = FilesystemUtil.getPluginDir();
         Path luaLibRootPath = pluginDir.resolve("lualib");
         Path corePrototypesRootPath = pluginDir.resolve("core_prototypes");
-        luaLibDownloader = new LuaLibDownloader(luaLibRootPath, corePrototypesRootPath);
+        luaLibParser = new LuaLibParser(luaLibRootPath, corePrototypesRootPath);
     }
 
     public static LuaLibService getInstance(Project project) {
@@ -47,7 +47,7 @@ public class LuaLibService {
 
         FactorioApiVersion version = this.factorioState.selectedFactorioVersion;
 
-        var path = luaLibDownloader.getLuaLibPath(version);
+        var path = luaLibParser.getLuaLibPath(version);
 
         if (path == null && downloadInProgress.compareAndSet(false, true)) {
             ProgressManager.getInstance().run(new LuaLibDownloadTask());
@@ -63,7 +63,7 @@ public class LuaLibService {
 
         FactorioApiVersion version = this.factorioState.selectedFactorioVersion;
 
-        var path = luaLibDownloader.getPrototypePath(version);
+        var path = luaLibParser.getPrototypePath(version);
 
         if (path == null && downloadInProgress.compareAndSet(false, true)) {
             ProgressManager.getInstance().run(new LuaLibDownloadTask());
@@ -77,7 +77,7 @@ public class LuaLibService {
             return;
         }
 
-        luaLibDownloader.removeLuaLibFiles();
+        luaLibParser.removeLuaLibFiles();
         PrototypesService.getInstance(project).reloadIndex();
     }
 
@@ -87,7 +87,7 @@ public class LuaLibService {
         try {
             FactorioApiVersion selectedVersion = this.factorioState.selectedFactorioVersion;
 
-            needUpdate = luaLibDownloader.checkForUpdate(selectedVersion);
+            needUpdate = luaLibParser.checkForUpdate(selectedVersion);
 
             if (needUpdate && downloadInProgress.compareAndSet(false, true)) {
                 ProgressManager.getInstance().run(new LuaLibDownloadTask());
@@ -110,7 +110,7 @@ public class LuaLibService {
             try {
                 FactorioApiVersion selectedVersion = FactorioState.getInstance(project).selectedFactorioVersion;
 
-                luaLibDownloader.downloadAll(selectedVersion);
+                luaLibParser.downloadAll(selectedVersion);
 
                 ApplicationManager.getApplication().invokeLater(() -> PrototypesService.getInstance(project).reloadIndex());
             } catch (GettingTagException e) {
