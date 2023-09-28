@@ -74,7 +74,7 @@ public class PrototypeService {
     public void checkForUpdate() {
         FactorioApiVersion selectedVersion = FactorioState.getInstance(project).selectedFactorioVersion;
 
-        var path = prototypeParser.getPrototypePath(selectedVersion);
+        Optional<Path> path = prototypeParser.getPrototypePath(selectedVersion);
 
         if (path.isEmpty()) {
             ProgressManager.getInstance().run(new PrototypeService.PrototypeTask());
