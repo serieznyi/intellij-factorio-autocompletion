@@ -151,8 +151,7 @@ public class PrototypeParser {
                     return true;
                 }
 
-                log.error("error downloading the single prototype page: %s".formatted(link));
-                log.error(e);
+                log.error("error downloading the single prototype page: %s".formatted(prototypeLink), e);
 
                 return false;
             }

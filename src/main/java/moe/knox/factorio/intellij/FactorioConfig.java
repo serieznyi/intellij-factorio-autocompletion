@@ -5,7 +5,7 @@ import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.NlsContexts;
 import moe.knox.factorio.core.LuaLibDownloader;
-import moe.knox.factorio.core.parser.api.ApiParser;
+import moe.knox.factorio.intellij.library.service.ApiService;
 import moe.knox.factorio.core.version.ApiVersionResolver;
 import moe.knox.factorio.core.version.FactorioApiVersion;
 import moe.knox.factorio.intellij.library.service.LuaLibService;
@@ -114,7 +114,7 @@ public class FactorioConfig implements SearchableConfigurable {
         }
 
         if (isVersionChanged()) {
-            ApiParser.removeCurrentAPI(project);
+            ApiService.getInstance(project).removeCurrentAPI();
             LuaLibService.getInstance(project).removeLuaLibFiles();
             LuaLibService.getInstance(project).checkForUpdate();
         }
@@ -129,13 +129,13 @@ public class FactorioConfig implements SearchableConfigurable {
     }
 
     private void removeParsedLibraries() {
-        ApiParser.removeCurrentAPI(project);
+        ApiService.getInstance(project).removeCurrentAPI();
         PrototypeService.getInstance(project).removeCurrentPrototypes();
         LuaLibService.getInstance(project).removeLuaLibFiles();
     }
 
     private void updateLibraries() {
-        ApiParser.checkForUpdate(project);
+        ApiService.getInstance(project).checkForUpdate();
         PrototypeService.getInstance(project).checkForUpdate();
         LuaLibService.getInstance(project).checkForUpdate();
     }
