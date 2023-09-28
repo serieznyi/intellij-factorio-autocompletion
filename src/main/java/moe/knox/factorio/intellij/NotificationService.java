@@ -77,4 +77,22 @@ final public class NotificationService {
             }
         };
     }
+
+    public void notifyErrorLuaLibUpdating() {
+        raiseNotification("""
+            Error checking LuaLib update. Please try again!
+        """, NotificationType.ERROR);
+    }
+
+    public void notifyErrorPrototypeUpdating() {
+        raiseNotification("""
+            Error checking Prototype update. Please try again!
+        """, NotificationType.ERROR);
+    }
+
+    public void notifyErrorApiUpdating() {
+        raiseNotification("""
+            Error checking Factorio Api update. Please try again!
+        """, NotificationType.ERROR);
+    }
 }
