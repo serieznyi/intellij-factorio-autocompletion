@@ -6,6 +6,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import lombok.CustomLog;
 import moe.knox.factorio.core.NotificationService;
 import moe.knox.factorio.core.PrototypesService;
 import moe.knox.factorio.core.parser.prototype.PrototypeParser;
@@ -22,8 +23,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@CustomLog
 public class PrototypeService {
-    private static final Logger LOG = Logger.getInstance(PrototypeService.class);
     private final AtomicBoolean downloadInProgress = new AtomicBoolean(false);
     private final Project project;
     private final PrototypeParser prototypeParser;
@@ -98,7 +99,7 @@ public class PrototypeService {
 
                 ApplicationManager.getApplication().invokeLater(FactorioLibraryProvider::reload);
             } catch (IOException e) {
-                LOG.error(e);
+                log.error(e);
                 NotificationService.getInstance(project).notifyErrorDownloadingPrototypeDefinitions();
             } finally {
                 downloadInProgress.set(false);
