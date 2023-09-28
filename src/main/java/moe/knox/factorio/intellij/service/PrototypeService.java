@@ -60,7 +60,7 @@ public class PrototypeService {
         return path;
     }
 
-    public void removeCurrentPrototypes() {
+    public void removeLibraryFiles() {
         if (downloadInProgress.get()) {
             return;
         }

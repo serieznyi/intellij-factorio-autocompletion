@@ -16,7 +16,6 @@ import moe.knox.factorio.intellij.FactorioState;
 import moe.knox.factorio.intellij.util.FilesystemUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -40,7 +39,7 @@ public class ApiService {
         return new ApiService(project);
     }
 
-    public void removeCurrentAPI() {
+    public void removeLibraryFiles() {
         if (downloadInProgress.get()) {
             return;
         }
@@ -59,7 +58,7 @@ public class ApiService {
         FactorioApiVersion newestVersion = detectLatestAllowedVersion();
 
         if (newestVersion != null && !newestVersion.equals(config.selectedFactorioVersion)) {
-            removeCurrentAPI();
+            removeLibraryFiles();
 
             if (downloadInProgress.compareAndSet(false, true)) {
                 ProgressManager.getInstance().run(new ApiTask());
