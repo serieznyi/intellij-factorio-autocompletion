@@ -16,8 +16,8 @@ import com.intellij.util.io.URLUtil;
 import com.tang.intellij.lua.lang.LuaIcons;
 import com.tang.intellij.lua.psi.LuaFileUtil;
 import lombok.CustomLog;
-import moe.knox.factorio.intellij.library.service.ApiService;
-import moe.knox.factorio.intellij.library.service.PrototypeService;
+import moe.knox.factorio.intellij.service.ApiService;
+import moe.knox.factorio.intellij.service.PrototypeService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +26,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.*;
 import java.nio.file.Path;
-import java.util.function.Consumer;
 
 @CustomLog
 public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {

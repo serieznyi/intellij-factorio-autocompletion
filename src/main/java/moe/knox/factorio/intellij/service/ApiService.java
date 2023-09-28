@@ -1,7 +1,6 @@
-package moe.knox.factorio.intellij.library.service;
+package moe.knox.factorio.intellij.service;
 
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;

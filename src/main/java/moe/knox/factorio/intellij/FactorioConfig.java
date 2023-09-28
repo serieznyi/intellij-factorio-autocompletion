@@ -4,11 +4,11 @@ import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.NlsContexts;
-import moe.knox.factorio.intellij.library.service.ApiService;
+import moe.knox.factorio.intellij.service.ApiService;
 import moe.knox.factorio.core.version.ApiVersionResolver;
 import moe.knox.factorio.core.version.FactorioApiVersion;
-import moe.knox.factorio.intellij.library.service.LuaLibService;
-import moe.knox.factorio.intellij.library.service.PrototypeService;
+import moe.knox.factorio.intellij.service.LuaLibService;
+import moe.knox.factorio.intellij.service.PrototypeService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
