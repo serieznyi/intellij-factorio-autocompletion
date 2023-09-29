@@ -4,12 +4,11 @@
     <vendor email="serieznyi@gmail.com">Maxim Mironyuk</vendor>
 
     <description><![CDATA[
-    Adds Support for the Factorio LUA API. This implements a full code completion.
-
-    To use the code completion, it has to be activated under `Settings > Languages & Frameworks > Factorio Autocompletion`
-
-    Fork of abandoned plugin <a  href="https://plugins.jetbrains.com/plugin/13330-factorio-lua-api-support">Factorio LUA API Support</a>.
-    ]]></description>
+    <p>Fork of abandoned plugin <a  href="https://plugins.jetbrains.com/plugin/13330-factorio-lua-api-support">Factorio LUA API Support</a>.</p>
+    <p>Adds Support for the Factorio LUA API. This implements a full code completion.</p>
+    <p>To use the code completion, it has to be activated under `Settings > Languages & Frameworks > Factorio Autocompletion`</p>
+    ]]>
+    </description>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
