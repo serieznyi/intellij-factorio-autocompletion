@@ -74,7 +74,7 @@ public class PrototypeService {
 
         Optional<Path> path = prototypeParser.getPrototypePath(selectedVersion);
 
-        if (path.isEmpty()) {
+        if (path.isEmpty() && downloadInProgress.compareAndSet(false, true)) {
             ProgressManager.getInstance().run(new PrototypeService.PrototypeTask());
         }
     }
