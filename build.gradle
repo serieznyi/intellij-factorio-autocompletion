@@ -39,18 +39,19 @@ ext.getPluginChangelog = { ->
             continue
         }
 
-        changelogHtml.append("<h3>" + item.version + "</h3>\n")
-        changelogHtml.append("<ul>")
+        changelogHtml.append("<h2>" + item.version + "</h2>\n")
 
         for (section in item.getSections()) {
-            String changesType = section.getKey()
+            changelogHtml.append("<h3>" + section.getKey() + "</h3>\n")
+
+            changelogHtml.append("<ul>")
 
             for ( sectionItem in section.getValue() ) {
-                changelogHtml.append("<li>[" + changesType + "] " + sectionItem.substring(2) + "</li>\n")
+                changelogHtml.append("<li>" + sectionItem + "</li>\n")
             }
-        }
 
-        changelogHtml.append("</ul>\n")
+            changelogHtml.append("</ul>\n")
+        }
     }
 
     return changelogHtml.toString()
@@ -58,6 +59,7 @@ ext.getPluginChangelog = { ->
 
 sonarqube {}
 
+// See https://github.com/JetBrains/gradle-changelog-plugin
 changelog {
     path = "${project.projectDir}/Changelog.md"
     header = "[${-> version.get()}] - ${new SimpleDateFormat("dd.MM.yyyy").format(new Date())}"
