@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+### Fixed
+- Fixed the condition for checking whether prototypes need to be updated
 
 ## [1.4.0-IDEA231-eap-3] - 2023-09-29
 ### Fixed
