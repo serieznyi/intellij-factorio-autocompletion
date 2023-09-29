@@ -10,7 +10,7 @@ plugins {
 }
 
 group 'moe.knox.factorio'
-version '1.4.0-IDEA231-eap-2'
+version '1.4.0-IDEA231-eap-3'
 
 java {
     toolchain {

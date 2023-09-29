@@ -5,11 +5,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [1.4.0-IDEA231-eap-2] - 22.08.2022
+## [1.4.0-IDEA231-eap-3] - 2023-09-29
+### Fixed
+- Fixed detecting directory of plugin
+
+### Added
+- [CORE] Allowed chose newest Factorio API
+- [UI] Added label for version dropdown
+- [DEV] Enabled SonarQube Inspections
+
+### Changed
+- [UI] Was unified error notifications
+- [DEV] Used logger instead print
+- [DEV] Big refactoring of codebase
+
+## [1.4.0-IDEA231-eap-2] - 2023-09-22
 ### Fixed
 - Build correct jar file for 2023.*
 
-## [1.4.0-IDEA231-eap-1] - 12.08.2022
+## [1.4.0-IDEA231-eap-1] - 2023-09-09
 ### Added
 - Compatibility with jetbrains IDEs 2023.*
 
@@ -80,3 +94,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Code completion for additional LUA files
 - Download and parse the factorio-lua-api
 - bultin-types as hardcoded library
+
+[unreleased]: https://github.com/serieznyi/intellij-factorio-autocompletion/compare/HEAD...1.4.0-IDEA231-eap-3
+[1.4.0-IDEA231-eap-3]: https://github.com/serieznyi/intellij-factorio-autocompletion/compare/1.4.0-IDEA231-eap-2...1.4.0-IDEA231-eap-3
+[1.4.0-IDEA231-eap-2]: https://github.com/serieznyi/intellij-factorio-autocompletion/compare/1.4.0-IDEA231-eap-1...1.4.0-IDEA231-eap-2
+[1.4.0-IDEA231-eap-1]: https://github.com/serieznyi/intellij-factorio-autocompletion/compare/1.3.4...1.4.0-IDEA231-eap-1
