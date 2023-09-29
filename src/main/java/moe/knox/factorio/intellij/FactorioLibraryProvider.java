@@ -67,13 +67,11 @@ public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
         }
 
         Optional<Path> apiPath = ApiService.getInstance(project).getApiPath();
-        if (apiPath.isPresent()) {
-            libList.add(createLibrary(apiPath.toString(), "Factorio API"));
-        }
+        apiPath.ifPresent(p -> libList.add(createLibrary(p, "Factorio API")));
 
         // protoDir for downloaded factorio prototypes
         Optional<Path> downloadedProtoDir = PrototypeService.getInstance(project).getPrototypePath();
-        downloadedProtoDir.ifPresent(t -> libList.add(createLibrary(t.toString(), "Factorio Prototypes")));
+        downloadedProtoDir.ifPresent(p -> libList.add(createLibrary(p, "Factorio Prototypes")));
 
         // corePrototypes "core" dir
 //        String corePrototypesLink = FactorioLualibParser.getCurrentPrototypeLink(project);
@@ -86,9 +84,8 @@ public class FactorioLibraryProvider extends AdditionalLibraryRootsProvider {
         return libList;
     }
 
-    private FactorioLibrary createLibrary(String downloadedDir, String libraryName) {
-        File downloadedProtoFile = new File(downloadedDir);
-        VirtualFile protoDir = VfsUtil.findFileByIoFile(downloadedProtoFile, true);
+    private FactorioLibrary createLibrary(Path dir, String libraryName) {
+        VirtualFile protoDir = VfsUtil.findFileByIoFile(dir.toFile(), true);
         for (VirtualFile protoDirChild : protoDir.getChildren()) {
             protoDirChild.putUserData(LuaFileUtil.INSTANCE.getPREDEFINED_KEY(), true);
         }
